@@ -4,24 +4,28 @@
 
 # List of projects
 
-## .NET
+## .NET Server
 
-* [ ] src/MagicOnionLab.Net.Basic: .NET Server and .NET Client with just and EchoService
+* [ ] src/MagicOnionLab.Net.Server: .NET Server with just and EchoService
 
-## Unity
+## .NET Client
+
+* [ ] src/MagicOnionLab.Net.Client: .NET Client with just and EchoService
+
+## Unity Client
 
 Desktop
 
-* [ ] src/MagicOnionLab.Unity.Basic.Windows.Mono: Linux .NET Server and Windows Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.Windows.IL2CPP: Linux .NET Server and Windows Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.Linux.Mono: Linux .NET Server and Linux Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.Linux.IL2CPP: Linux .NET Server and Linux Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.macOS.Mono: Linux .NET Server and Linux Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.macOS.IL2CPP: Linux .NET Server and Linux Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Windows.Mono: Windows Unity Client (Mono) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Windows.IL2CPP: Windows Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Linux.Mono: Linux Unity Client (Mono) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Linux.IL2CPP: Linux Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.macOS.Mono: Linux Unity Client (Mono) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.macOS.IL2CPP: Linux Unity Client (IL2CPP) with just and EchoService
 
 Mobile
 
-* [ ] src/MagicOnionLab.Unity.Basic.Android.Mono: Linux .NET Server and Android Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.Android.IL2CPP: Linux .NET Server and Android Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.iOS.Mono: Linux .NET Server and Android Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Basic.iOS.IL2CPP: Linux .NET Server and Android Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Android.Mono: Android Unity Client (Mono) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Android.IL2CPP: Android Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.iOS.Mono: Android Unity Client (Mono) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.iOS.IL2CPP: Android Unity Client (IL2CPP) with just and EchoService
