@@ -4,13 +4,14 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="ConsoleAppFramework" Version="4.2.4" />
+    <PackageVersion Include="GitHubActionsTestLogger" Version="2.3.2" />
     <PackageVersion Include="Grpc.AspNetCore" Version="2.55.0" />
     <PackageVersion Include="MagicOnion.Client" Version="5.1.8" />
     <PackageVersion Include="MagicOnion.Serialization.MemoryPack" Version="5.1.8-preview" />
     <PackageVersion Include="MagicOnion.Abstractions" Version="5.1.8" />
     <PackageVersion Include="MagicOnion.Server" Version="5.1.8" />
     <PackageVersion Include="MessagePack" Version="2.5.124" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub"  Version="1.1.1" PrivateAssets="all" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
     <PackageVersion Include="xunit" Version="2.4.2" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.5">
