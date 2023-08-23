@@ -4,28 +4,32 @@
 
 # List of projects
 
+## .NET Shared
+
+* [x] src/MagicOnionLab.Shared: .NET Shared with Service/Hub and MessagePack object
+
 ## .NET Server
 
-* [ ] src/MagicOnionLab.Net.Server: .NET Server with just and EchoService
+* [x] src/MagicOnionLab.Server: .NET Server
 
-## .NET Client
+## Client
 
-* [ ] src/MagicOnionLab.Net.Client: .NET Client with just and EchoService
+.NET
 
-## Unity Client
+* [x] src/MagicOnionLab.Net.Client: .NET Client
 
-Desktop
+Unity - Desktop
 
-* [ ] src/MagicOnionLab.Unity.Windows.Mono: Windows Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Windows.IL2CPP: Windows Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Linux.Mono: Linux Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Linux.IL2CPP: Linux Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.macOS.Mono: Linux Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.macOS.IL2CPP: Linux Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Windows.Mono: Windows Unity Client (Mono)
+* [ ] src/MagicOnionLab.Unity.Windows.IL2CPP: Windows Unity Client (IL2CPP)
+* [ ] src/MagicOnionLab.Unity.Linux.Mono: Linux Unity Client (Mono)
+* [ ] src/MagicOnionLab.Unity.Linux.IL2CPP: Linux Unity Client (IL2CPP)
+* [ ] src/MagicOnionLab.Unity.macOS.Mono: Linux Unity Client (Mono)
+* [ ] src/MagicOnionLab.Unity.macOS.IL2CPP: Linux Unity Client (IL2CPP)
 
-Mobile
+Unity - Mobile
 
-* [ ] src/MagicOnionLab.Unity.Android.Mono: Android Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.Android.IL2CPP: Android Unity Client (IL2CPP) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.iOS.Mono: Android Unity Client (Mono) with just and EchoService
-* [ ] src/MagicOnionLab.Unity.iOS.IL2CPP: Android Unity Client (IL2CPP) with just and EchoService
+* [ ] src/MagicOnionLab.Unity.Android.Mono: Android Unity Client (Mono)
+* [ ] src/MagicOnionLab.Unity.Android.IL2CPP: Android Unity Client (IL2CPP)
+* [ ] src/MagicOnionLab.Unity.iOS.Mono: Android Unity Client (Mono)
+* [ ] src/MagicOnionLab.Unity.iOS.IL2CPP: Android Unity Client (IL2CPP)
