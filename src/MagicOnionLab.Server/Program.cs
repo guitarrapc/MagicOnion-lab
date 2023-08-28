@@ -1,3 +1,4 @@
+using MagicOnionLab.Server.Models;
 using MagicOnionLab.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 builder.Services.AddMagicOnion(); // Use MagicOnion
+builder.Services.AddSingleton<Rooms>();
 
 var app = builder.Build();
 
