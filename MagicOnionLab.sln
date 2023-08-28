@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicOnionLab.Shared", "src
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicOnionLab.Net.Client", "src\MagicOnionLab.Net.Client\MagicOnionLab.Net.Client.csproj", "{EEB3AF1E-3DC2-4821-8EA8-58438289D007}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicOnionLab.Tests", "tests\MagicOnionLab.Tests\MagicOnionLab.Tests.csproj", "{0EC3E6B4-C5E0-4A57-8EFF-FAB5A5342E6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicOnionLab.Tests", "tests\MagicOnionLab.Tests\MagicOnionLab.Tests.csproj", "{0EC3E6B4-C5E0-4A57-8EFF-FAB5A5342E6E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0F795B87-4105-4F07-803E-B6C74E992EBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0EC3E6B4-C5E0-4A57-8EFF-FAB5A5342E6E} = {0F795B87-4105-4F07-803E-B6C74E992EBD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {61023467-9968-4BBC-BA72-F900BBFC7D37}
