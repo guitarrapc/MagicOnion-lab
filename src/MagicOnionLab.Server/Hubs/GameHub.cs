@@ -10,24 +10,26 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
 {
     private readonly ILogger<GameHub> _logger;
     private IGroup? _room;
-    private readonly GameRoomsModel _rooms;
+    private readonly GameRoomsModel _model;
     private string? _roomName;
     private string? _userName;
 
-    public GameHub(GameRoomsModel rooms, ILogger<GameHub> logger)
+    public GameHub(GameRoomsModel model, ILogger<GameHub> logger)
     {
         _logger = logger;
-        _rooms = rooms;
+        _model = model;
     }
 
     public async ValueTask CreateRoomAsync(GameRoomCreateRequest request)
     {
+        _logger.LogTrace($"{nameof(CreateRoomAsync)}: {request.RoomName} {request.Capacity}");
+
         _room = await Group.AddAsync(request.RoomName);
         _roomName = request.RoomName;
 
-        if (_rooms.TryCreate(request.RoomName, request.Capacity))
+        if (_model.TryCreateRoom(request.RoomName, request.Capacity))
         {
-            this.Broadcast(_room).OnCreate(request.RoomName);
+            this.Broadcast(_room).OnCreateRoom(request.RoomName);
         }
     }
 
@@ -35,16 +37,22 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
     {
         ArgumentNullException.ThrowIfNull(_room);
 
+        _logger.LogInformation($"{nameof(JoinRoomAsync)}: {request.UserName} {request.RoomName}");
+
         _userName = request.UserName;
-        _rooms.TryJoinRoom(request.RoomName, request.UserName);
-        this.Broadcast(_room).OnJoin(request.UserName);
+        _model.TryJoinRoom(request.RoomName, request.UserName);
+        this.Broadcast(_room).OnJoinRoom(request.UserName);
     }
 
     public async ValueTask LeaveRoomAsync()
     {
         ArgumentNullException.ThrowIfNull(_room);
+        ArgumentNullException.ThrowIfNull(_userName);
+
+        _logger.LogInformation($"{nameof(LeaveRoomAsync)}: {_userName}");
+
         await _room.RemoveAsync(Context);
-        Broadcast(_room).OnLeave(_userName);
+        Broadcast(_room).OnLeaveRoom(_userName);
     }
 
     public async ValueTask ReadyMatchAsync()
@@ -52,11 +60,15 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNull(_room);
         ArgumentNullException.ThrowIfNullOrEmpty(_roomName);
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
-        _rooms.TryReadyMatch(_roomName, _userName);
-        if (_rooms.IsMatchComplete(_roomName))
+
+        _logger.LogInformation($"{nameof(ReadyMatchAsync)}: {_userName}");
+
+        _model.ReadyMatch(_roomName, _userName, true);
+        await _model.WaitMatchingCompletedAsync(_roomName); // wait until all members sent ready for match
+        if (_model.TryClearMatchInfo(_roomName))
         {
-            _rooms.ClearMatchInfo(_roomName);
-            this.Broadcast(_room).OnMatch();
+            _logger.LogInformation($"{nameof(ReadyMatchAsync)}: Matching complete.");
+            this.Broadcast(_room).OnMatchCompleted();
         }
     }
 
@@ -66,8 +78,9 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
         ArgumentNullException.ThrowIfNull(_room);
 
-        _logger.LogInformation($"{nameof(UpdateUserInfonAsync)}: {_userName} => ({request.Position.x},{request.Position.y},{request.Position.z})");
-        _rooms.TryUpdateUserverInfo(_roomName, _userName, request.Position);
+        _logger.LogTrace($"{nameof(UpdateUserInfonAsync)}: {_userName} => ({request.Position.x},{request.Position.y},{request.Position.z})");
+
+        _model.TryUpdateUserverInfo(_roomName, _userName, request.Position);
         Broadcast(_room).OnUpdateUserInfo(new GameRoomUserInfoUpdateResponse
         {
             UserName = _userName,

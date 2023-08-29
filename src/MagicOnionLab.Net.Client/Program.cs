@@ -7,9 +7,10 @@ using Microsoft.Extensions.Logging;
 using UnityEngine;
 
 //args = new[] { "math", "--host", "http://localhost:5288", "--x", "123", "--y", "578" };
-//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1" };
-//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2" };
-args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4" };
+//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
+//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
+//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
+args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
 
 var app = ConsoleApp.Create(args);
 app.AddCommands<MagicOnionClientApp>();
@@ -31,7 +32,7 @@ public class MagicOnionClientApp : ConsoleAppBase
     }
 
     [Command(commandName: "position")]
-    public async ValueTask PositionClientHub(string host, string roomName, int userCount = 1)
+    public async ValueTask PositionClientHub(string host, string roomName, int userCount = 1, int capacity = 1)
     {
         if (userCount == 1)
         {
@@ -41,7 +42,7 @@ public class MagicOnionClientApp : ConsoleAppBase
             var client = new PositionHubClient(Context.Logger, userName, index);
 
             // connect
-            await client.ConnectAsync(channel, roomName, userCount, Context.CancellationToken);
+            await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
 
             // match
             await client.ReadyAsync();
@@ -58,7 +59,7 @@ public class MagicOnionClientApp : ConsoleAppBase
                 .Select((x, i) => (userName: $"foo{x}", index: i))
                 .Select(async x =>
                 {
-                    await Task.Delay(1000 * x.index);
+                    await Task.Delay(200 * Random.Shared.Next(1, userCount) * x.index);
 
                     var userName = x.userName;
                     var index = x.index;
@@ -67,7 +68,7 @@ public class MagicOnionClientApp : ConsoleAppBase
                     var client = new PositionHubClient(Context.Logger, userName, index);
 
                     // connect
-                    await client.ConnectAsync(channel, roomName, userCount, Context.CancellationToken);
+                    await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
 
                     // match
                     await client.ReadyAsync();
@@ -108,9 +109,6 @@ public class MagicOnionClientApp : ConsoleAppBase
 
 public class PositionHubClient : IGameHubReceiver
 {
-    public Task<bool> OnMatchComplete => matchTcs.Task;
-    private TaskCompletionSource<bool> matchTcs = new TaskCompletionSource<bool>();
-
     private IGameHub? _client;
     private readonly ILogger _logger;
     private readonly string _userName;
@@ -147,8 +145,8 @@ public class PositionHubClient : IGameHubReceiver
         ArgumentNullException.ThrowIfNull(_client);
 
         // ready
+        _logger.LogInformation($"Ready matching: {_userName}");
         await _client.ReadyMatchAsync();
-        await OnMatchComplete; // wait all member ready
     }
 
     public async ValueTask UpdateUserInfoAsync()
@@ -158,9 +156,10 @@ public class PositionHubClient : IGameHubReceiver
         // update
         for (var i = 0; i < 10; i++)
         {
+            var position = i * (_index + 1);
             await _client.UpdateUserInfonAsync(new GameRoomUserInfoUpdateRequest
             {
-                Position = new Vector3(i * (_index + 1), i * (_index + 1), i * (_index + 1)),
+                Position = new Vector3(position, position, position),
             });
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
@@ -172,12 +171,12 @@ public class PositionHubClient : IGameHubReceiver
         await _client.LeaveRoomAsync();
     }
 
-    public void OnCreate(string roomName)
+    public void OnCreateRoom(string roomName)
     {
         _logger.LogInformation($"Create room: {roomName}");
     }
 
-    public void OnJoin(string userName)
+    public void OnJoinRoom(string userName)
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
@@ -185,7 +184,7 @@ public class PositionHubClient : IGameHubReceiver
         }
     }
 
-    public void OnLeave(string userName)
+    public void OnLeaveRoom(string userName)
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
@@ -193,10 +192,9 @@ public class PositionHubClient : IGameHubReceiver
         }
     }
 
-    public void OnMatch()
+    public void OnMatchCompleted()
     {
         _logger.LogInformation($"Matching complete.");
-        matchTcs.TrySetResult(true);
     }
 
     public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
@@ -224,6 +222,5 @@ public class PositionHubClient : IGameHubReceiver
             return _client.WaitForDisconnect();
         }
         return Task.CompletedTask;
-
     }
 }
