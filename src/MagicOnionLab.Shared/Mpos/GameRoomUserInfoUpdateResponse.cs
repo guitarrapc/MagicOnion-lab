@@ -4,7 +4,7 @@ using UnityEngine;
 namespace MagicOnionLab.Shared.Mpos
 {
     [MessagePackObject]
-    public class PositionRoomUpdateResponse
+    public class GameRoomUserInfoUpdateResponse
     {
         [Key(0)]
         public string UserName { get; set; }

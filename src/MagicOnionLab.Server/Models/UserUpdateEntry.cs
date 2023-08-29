@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MagicOnionLab.Server.Models;
 
-public class UserPosition
+public class UserUpdateEntry
 {
     public Vector3 PositionCurrent => _positionCurrent;
     private Vector3 _positionCurrent;
@@ -12,7 +12,7 @@ public class UserPosition
 
     private readonly int _historyCount;
 
-    public UserPosition(string userName, int historyCount = 50)
+    public UserUpdateEntry(string userName, int historyCount = 50)
     {
         _historyCount = historyCount;
         UserName = userName;
