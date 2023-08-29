@@ -6,21 +6,21 @@ using MagicOnionLab.Shared.Mpos;
 
 namespace MagicOnionLab.Server.Hubs;
 
-public class PositionHub : StreamingHubBase<IPositionHub, IPositionHubReceiver>, IPositionHub
+public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
 {
-    private readonly ILogger<PositionHub> _logger;
+    private readonly ILogger<GameHub> _logger;
     private IGroup? _room;
-    private readonly Rooms _rooms;
+    private readonly GameRoomsModel _rooms;
     private string? _roomName;
     private string? _userName;
 
-    public PositionHub(Rooms rooms, ILogger<PositionHub> logger)
+    public GameHub(GameRoomsModel rooms, ILogger<GameHub> logger)
     {
         _logger = logger;
         _rooms = rooms;
     }
 
-    public async ValueTask CreateRoomAsync(PositionRoomCreateRequest request)
+    public async ValueTask CreateRoomAsync(GameRoomCreateRequest request)
     {
         _room = await Group.AddAsync(request.RoomName);
         _roomName = request.RoomName;
@@ -31,43 +31,44 @@ public class PositionHub : StreamingHubBase<IPositionHub, IPositionHubReceiver>,
         }
     }
 
-    public async ValueTask JoinAsync(PositionRoomJoinRequest request)
+    public async ValueTask JoinRoomAsync(GameRoomJoinRequest request)
     {
         ArgumentNullException.ThrowIfNull(_room);
 
         _userName = request.UserName;
-        _rooms.TryJoin(request.RoomName, request.UserName);
+        _rooms.TryJoinRoom(request.RoomName, request.UserName);
         this.Broadcast(_room).OnJoin(request.UserName);
     }
 
-    public async ValueTask ReadyAsync()
-    {
-        ArgumentNullException.ThrowIfNull(_room);
-        ArgumentNullException.ThrowIfNullOrEmpty(_roomName);
-        ArgumentNullException.ThrowIfNullOrEmpty(_userName);
-        _rooms.TryReady(_roomName, _userName);
-        if (_rooms.IsCompleteReady(_roomName))
-        {
-            this.Broadcast(_room).OnMatch();
-        }
-    }
-
-    public async ValueTask LeaveAsync()
+    public async ValueTask LeaveRoomAsync()
     {
         ArgumentNullException.ThrowIfNull(_room);
         await _room.RemoveAsync(Context);
         Broadcast(_room).OnLeave(_userName);
     }
 
-    public ValueTask UpdatePosition(PositionRoomUpdateRequest request)
+    public async ValueTask ReadyMatchAsync()
+    {
+        ArgumentNullException.ThrowIfNull(_room);
+        ArgumentNullException.ThrowIfNullOrEmpty(_roomName);
+        ArgumentNullException.ThrowIfNullOrEmpty(_userName);
+        _rooms.TryReadyMatch(_roomName, _userName);
+        if (_rooms.IsMatchComplete(_roomName))
+        {
+            _rooms.ClearMatchInfo(_roomName);
+            this.Broadcast(_room).OnMatch();
+        }
+    }
+
+    public ValueTask UpdateUserInfonAsync(GameRoomUserInfoUpdateRequest request)
     {
         ArgumentNullException.ThrowIfNullOrEmpty(_roomName);
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
         ArgumentNullException.ThrowIfNull(_room);
 
-        _logger.LogInformation($"{nameof(UpdatePosition)}: {_userName} => ({request.Position.x},{request.Position.y},{request.Position.z})");
-        _rooms.TryUpdate(_roomName, _userName, request.Position);
-        Broadcast(_room).OnUpdatePosition(new PositionRoomUpdateResponse
+        _logger.LogInformation($"{nameof(UpdateUserInfonAsync)}: {_userName} => ({request.Position.x},{request.Position.y},{request.Position.z})");
+        _rooms.TryUpdateUserverInfo(_roomName, _userName, request.Position);
+        Broadcast(_room).OnUpdateUserInfo(new GameRoomUserInfoUpdateResponse
         {
             UserName = _userName,
             Position = request.Position,

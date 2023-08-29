@@ -47,7 +47,7 @@ public class MagicOnionClientApp : ConsoleAppBase
             await client.ReadyAsync();
 
             // update
-            await client.UpdatePositionAsync();
+            await client.UpdateUserInfoAsync();
 
             // leave
             await client.LeaveAsync();
@@ -73,7 +73,7 @@ public class MagicOnionClientApp : ConsoleAppBase
                     await client.ReadyAsync();
 
                     // update
-                    await client.UpdatePositionAsync();
+                    await client.UpdateUserInfoAsync();
 
                     // leave
                     await client.LeaveAsync();
@@ -106,12 +106,12 @@ public class MagicOnionClientApp : ConsoleAppBase
     }
 }
 
-public class PositionHubClient : IPositionHubReceiver
+public class PositionHubClient : IGameHubReceiver
 {
     public Task<bool> OnMatchComplete => matchTcs.Task;
     private TaskCompletionSource<bool> matchTcs = new TaskCompletionSource<bool>();
 
-    private IPositionHub? _client;
+    private IGameHub? _client;
     private readonly ILogger _logger;
     private readonly string _userName;
     private int _index;
@@ -125,17 +125,17 @@ public class PositionHubClient : IPositionHubReceiver
 
     public async ValueTask ConnectAsync(GrpcChannel channel, string roomName, int capacity, CancellationToken ct)
     {
-        _client = await StreamingHubClient.ConnectAsync<IPositionHub, IPositionHubReceiver>(channel, this, cancellationToken: ct);
+        _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(channel, this, cancellationToken: ct);
 
         // create
-        await _client.CreateRoomAsync(new PositionRoomCreateRequest
+        await _client.CreateRoomAsync(new GameRoomCreateRequest
         {
             RoomName = roomName,
             Capacity = capacity,
         });
 
         // join
-        await _client.JoinAsync(new PositionRoomJoinRequest
+        await _client.JoinRoomAsync(new GameRoomJoinRequest
         {
             RoomName = roomName,
             UserName = _userName,
@@ -147,18 +147,18 @@ public class PositionHubClient : IPositionHubReceiver
         ArgumentNullException.ThrowIfNull(_client);
 
         // ready
-        await _client.ReadyAsync();
+        await _client.ReadyMatchAsync();
         await OnMatchComplete; // wait all member ready
     }
 
-    public async ValueTask UpdatePositionAsync()
+    public async ValueTask UpdateUserInfoAsync()
     {
         ArgumentNullException.ThrowIfNull(_client);
 
         // update
         for (var i = 0; i < 10; i++)
         {
-            await _client.UpdatePosition(new PositionRoomUpdateRequest
+            await _client.UpdateUserInfonAsync(new GameRoomUserInfoUpdateRequest
             {
                 Position = new Vector3(i * (_index + 1), i * (_index + 1), i * (_index + 1)),
             });
@@ -169,7 +169,7 @@ public class PositionHubClient : IPositionHubReceiver
     public async ValueTask LeaveAsync()
     {
         ArgumentNullException.ThrowIfNull(_client);
-        await _client.LeaveAsync();
+        await _client.LeaveRoomAsync();
     }
 
     public void OnCreate(string roomName)
@@ -199,11 +199,11 @@ public class PositionHubClient : IPositionHubReceiver
         matchTcs.TrySetResult(true);
     }
 
-    public void OnUpdatePosition(PositionRoomUpdateResponse response)
+    public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
     {
         if (_userName.Equals(response.UserName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Update Position: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})");
+            _logger.LogInformation($"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})");
         }
     }
 

@@ -3,31 +3,31 @@ using UnityEngine;
 
 namespace MagicOnionLab.Server.Models;
 
-public class Rooms
+public class GameRoomsModel
 {
     private readonly ConcurrentDictionary<string, int> _roomInfos;
-    private readonly ConcurrentDictionary<string, List<UserPosition>> _userPositions;
-    private readonly ConcurrentDictionary<string, List<UserMatch>> _userMatches;
+    private readonly ConcurrentDictionary<string, List<MatchEntry>> _matchings;
+    private readonly ConcurrentDictionary<string, List<UserUpdateEntry>> _userInfoupdates;
 
-    public Rooms()
+    public GameRoomsModel()
     {
         _roomInfos = new ConcurrentDictionary<string, int>();
-        _userPositions = new ConcurrentDictionary<string, List<UserPosition>>();
-        _userMatches = new ConcurrentDictionary<string, List<UserMatch>>();
+        _userInfoupdates = new ConcurrentDictionary<string, List<UserUpdateEntry>>();
+        _matchings = new ConcurrentDictionary<string, List<MatchEntry>>();
     }
 
     public bool TryCreate(string roomName, int capacity)
     {
-        return _roomInfos.TryAdd(roomName, capacity) && _userPositions.TryAdd(roomName, new List<UserPosition>());
+        return _roomInfos.TryAdd(roomName, capacity) && _userInfoupdates.TryAdd(roomName, new List<UserUpdateEntry>());
     }
 
-    public bool TryJoin(string roomName, string userName)
+    public bool TryJoinRoom(string roomName, string userName)
     {
-        if (_roomInfos.TryGetValue(roomName, out var capacity) && _userPositions.TryGetValue(roomName, out var current))
+        if (_roomInfos.TryGetValue(roomName, out var capacity) && _userInfoupdates.TryGetValue(roomName, out var current))
         {
             if (current.Count > capacity)
             {
-                throw new PositionRoomException($"Trying to join room but room capacity full filled.");
+                throw new GameHubException($"Trying to join room but room capacity full filled.");
             }
             lock (roomName)
             {
@@ -38,16 +38,16 @@ public class Rooms
                         return false;
                     }
                 }
-                current.Add(new UserPosition(userName));
+                current.Add(new UserUpdateEntry(userName));
                 return true;
             }
         }
-        return _userPositions.TryAdd(roomName, new List<UserPosition> { new UserPosition(userName) });
+        return _userInfoupdates.TryAdd(roomName, new List<UserUpdateEntry> { new UserUpdateEntry(userName) });
     }
 
-    public bool TryUpdate(string roomName, string userName, Vector3 position)
+    public bool TryUpdateUserverInfo(string roomName, string userName, Vector3 position)
     {
-        if (_userPositions.TryGetValue(roomName, out var current))
+        if (_userInfoupdates.TryGetValue(roomName, out var current))
         {
             lock (roomName)
             {
@@ -65,14 +65,14 @@ public class Rooms
         return false;
     }
 
-    public bool TryLeave(string roomName)
+    public bool TryLeaveRoom(string roomName)
     {
-        return _userPositions.TryRemove(roomName, out var _);
+        return _userInfoupdates.TryRemove(roomName, out var _);
     }
 
-    public bool TryReady(string roomName, string userName)
+    public bool TryReadyMatch(string roomName, string userName)
     {
-        if (_userMatches.TryGetValue(roomName, out var current))
+        if (_matchings.TryGetValue(roomName, out var current))
         {
             lock (roomName)
             {
@@ -89,9 +89,9 @@ public class Rooms
         }
         else
         {
-            _userMatches.TryAdd(roomName, new List<UserMatch>
+            _matchings.TryAdd(roomName, new List<MatchEntry>
             {
-                new UserMatch
+                new MatchEntry
                 {
                     UserName = userName,
                     Ready = true,
@@ -101,16 +101,21 @@ public class Rooms
         }
     }
 
-    public bool IsCompleteReady(string roomName)
+    public bool IsMatchComplete(string roomName)
     {
-        if (_roomInfos.TryGetValue(roomName, out var capacity) && _userMatches.TryGetValue(roomName, out var current))
+        if (_roomInfos.TryGetValue(roomName, out var capacity) && _matchings.TryGetValue(roomName, out var current))
         {
-            if (_userPositions.TryGetValue(roomName, out var positions) && positions.Count == capacity)
+            if (_userInfoupdates.TryGetValue(roomName, out var positions) && positions.Count == capacity)
             {
                 return current.All(x => x.Ready);
             }
             return false;
         }
         return false;
+    }
+
+    public void ClearMatchInfo(string roomName)
+    {
+        _matchings.TryRemove(roomName, out var _);
     }
 }

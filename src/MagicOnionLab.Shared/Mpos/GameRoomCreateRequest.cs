@@ -3,11 +3,11 @@ using MessagePack;
 namespace MagicOnionLab.Shared.Mpos
 {
     [MessagePackObject]
-    public class PositionRoomJoinRequest
+    public class GameRoomCreateRequest
     {
         [Key(0)]
         public string RoomName { get; set; }
         [Key(1)]
-        public string UserName { get; set; }
+        public int Capacity { get; set; }
     }
 }
