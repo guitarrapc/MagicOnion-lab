@@ -7,49 +7,74 @@ public class GameRoomsModel
 {
     private readonly ConcurrentDictionary<string, int> _roomInfos;
     private readonly ConcurrentDictionary<string, List<MatchEntry>> _matchings;
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<bool>> _matchCompletes;
     private readonly ConcurrentDictionary<string, List<UserUpdateEntry>> _userInfoupdates;
 
     public GameRoomsModel()
     {
         _roomInfos = new ConcurrentDictionary<string, int>();
-        _userInfoupdates = new ConcurrentDictionary<string, List<UserUpdateEntry>>();
         _matchings = new ConcurrentDictionary<string, List<MatchEntry>>();
+        _matchCompletes = new ConcurrentDictionary<string, TaskCompletionSource<bool>>();
+        _userInfoupdates = new ConcurrentDictionary<string, List<UserUpdateEntry>>();
     }
 
-    public bool TryCreate(string roomName, int capacity)
+    /// <summary>
+    /// Create room
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <param name="capacity"></param>
+    /// <returns></returns>
+    public bool TryCreateRoom(string roomName, int capacity)
     {
-        return _roomInfos.TryAdd(roomName, capacity) && _userInfoupdates.TryAdd(roomName, new List<UserUpdateEntry>());
+        lock (roomName)
+        {
+            var roomInfos = _roomInfos.TryAdd(roomName, capacity);
+            var matchComplete = _matchCompletes.TryAdd(roomName, new TaskCompletionSource<bool>());
+            return roomInfos;
+        }
     }
 
+    /// <summary>
+    /// Join room
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <param name="userName"></param>
+    /// <returns></returns>
+    /// <exception cref="GameHubException"></exception>
     public bool TryJoinRoom(string roomName, string userName)
     {
-        if (_roomInfos.TryGetValue(roomName, out var capacity) && _userInfoupdates.TryGetValue(roomName, out var current))
+        var userInfos = _userInfoupdates.GetOrAdd(roomName, new List<UserUpdateEntry>());
+
+        lock (userInfos)
         {
-            if (current.Count > capacity)
+            // already room full-filled.
+            if (_roomInfos.TryGetValue(roomName, out var capacity) && userInfos.Count > capacity)
             {
-                throw new GameHubException($"Trying to join room but room capacity full filled.");
+                // Trying to join room but room capacity full filled.
+                return false;
             }
-            lock (roomName)
+
+            if (!userInfos.Exists(x => x.UserName == userName))
             {
-                for (var i = 0; i < current.Count; i++)
-                {
-                    if (current[i].UserName.Equals(userName, StringComparison.Ordinal))
-                    {
-                        return false;
-                    }
-                }
-                current.Add(new UserUpdateEntry(userName));
+                userInfos.Add(new UserUpdateEntry(userName));
                 return true;
             }
+            return false;
         }
-        return _userInfoupdates.TryAdd(roomName, new List<UserUpdateEntry> { new UserUpdateEntry(userName) });
     }
 
+    /// <summary>
+    /// Update Userinfo
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <param name="userName"></param>
+    /// <param name="position"></param>
+    /// <returns></returns>
     public bool TryUpdateUserverInfo(string roomName, string userName, Vector3 position)
     {
         if (_userInfoupdates.TryGetValue(roomName, out var current))
         {
-            lock (roomName)
+            lock (current)
             {
                 for (var i = 0; i < current.Count; i++)
                 {
@@ -65,57 +90,81 @@ public class GameRoomsModel
         return false;
     }
 
+    /// <summary>
+    /// Leave Room
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <returns></returns>
     public bool TryLeaveRoom(string roomName)
     {
         return _userInfoupdates.TryRemove(roomName, out var _);
     }
 
-    public bool TryReadyMatch(string roomName, string userName)
+    /// <summary>
+    /// Ready matching for room
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <param name="userName"></param>
+    /// <param name="ready"></param>
+    public void ReadyMatch(string roomName, string userName, bool ready)
     {
-        if (_matchings.TryGetValue(roomName, out var current))
+        var matchings = _matchings.GetOrAdd(roomName, new List<MatchEntry>());
+        lock (matchings)
         {
-            lock (roomName)
+            if (!matchings.Exists(x => x.UserName.Equals(userName, StringComparison.Ordinal)))
             {
-                for (var i = 0; i < current.Count; i++)
+                matchings.Add(new MatchEntry
                 {
-                    if (current[i].UserName.Equals(userName, StringComparison.Ordinal))
-                    {
-                        current[i].Ready = true;
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-        else
-        {
-            _matchings.TryAdd(roomName, new List<MatchEntry>
-            {
-                new MatchEntry
-                {
+                    Ready = ready,
                     UserName = userName,
-                    Ready = true,
-                }
-            });
-            return true;
-        }
-    }
-
-    public bool IsMatchComplete(string roomName)
-    {
-        if (_roomInfos.TryGetValue(roomName, out var capacity) && _matchings.TryGetValue(roomName, out var current))
-        {
-            if (_userInfoupdates.TryGetValue(roomName, out var positions) && positions.Count == capacity)
-            {
-                return current.All(x => x.Ready);
+                });
             }
-            return false;
         }
-        return false;
     }
 
-    public void ClearMatchInfo(string roomName)
+    /// <summary>
+    /// Wait until matching complete.
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <returns></returns>
+    public Task WaitMatchingCompletedAsync(string roomName)
     {
-        _matchings.TryRemove(roomName, out var _);
+        if (!_roomInfos.TryGetValue(roomName, out var capacity))
+        {
+            throw new GameHubException($"Room not initialized. {roomName}");
+        }
+        if (!_matchings.TryGetValue(roomName, out var matching))
+        {
+            throw new GameHubException($"Matching not initialized. {roomName}");
+        }
+
+        var task = _matchCompletes.TryGetValue(roomName, out var matchTcs) ? matchTcs.Task : throw new ArgumentNullException(nameof(matchTcs));
+        if (_userInfoupdates.TryGetValue(roomName, out var users))
+        {
+            if (users.Count == capacity && matching.Count == capacity)
+            {
+                var result = matching.All(x => x.Ready);
+                if (result && _matchCompletes.TryGetValue(roomName, out var tcs))
+                {
+                    // complete match when both member and ready fullfilled.
+                    tcs.TrySetResult(true);
+                }
+            }
+        }
+
+        // wait
+        return task;
+    }
+
+    /// <summary>
+    /// Clear Matching info. Only first call return true, others return false.
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <returns></returns>
+    public bool TryClearMatchInfo(string roomName)
+    {
+        var matching = _matchings.TryRemove(roomName, out var _);
+        var matchComplete = _matchCompletes.TryRemove(roomName, out var _);
+        return matching;
     }
 }
