@@ -63,19 +63,12 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
 
         _logger.LogInformation($"{nameof(ReadyMatchAsync)}: {_userName}");
 
-        try
+        _model.ReadyMatch(_roomName, _userName, true);
+        await _model.WaitMatchingCompletedAsync(_roomName); // wait until all members sent ready for match
+        if (_model.TryClearMatchInfo(_roomName))
         {
-            _model.ReadyMatch(_roomName, _userName, true);
-            await _model.WaitMatchingCompletedAsync(_roomName); // wait until all members sent ready for match
-            if (_model.TryClearMatchInfo(_roomName))
-            {
-                this.Broadcast(_room).OnMatchCompleted();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogInformation($"Error happen on {_userName} {ex.Message} {ex}");
-            throw;
+            _logger.LogInformation($"{nameof(ReadyMatchAsync)}: Matching complete.");
+            this.Broadcast(_room).OnMatchCompleted();
         }
     }
 
