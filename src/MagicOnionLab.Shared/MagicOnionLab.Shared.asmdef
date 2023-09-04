@@ -2,6 +2,7 @@
     "name": "MagicOnionLab.Shared.Unity",
     "references": [
         "MessagePack",
+        "MessagePack.Annotations",
         "MagicOnion.Abstractions"
     ],
     "optionalUnityReferences": [],
