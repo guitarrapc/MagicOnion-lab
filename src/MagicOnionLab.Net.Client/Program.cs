@@ -39,7 +39,7 @@ public class MagicOnionClientApp : ConsoleAppBase
             var index = 0;
             var userName = "foo";
             using var channel = await TryConnectAsync(host);
-            var client = new PositionHubClient(Context.Logger, userName, index);
+            var client = new GameHubClient(Context.Logger, userName, index);
 
             // connect
             await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
@@ -52,6 +52,9 @@ public class MagicOnionClientApp : ConsoleAppBase
 
             // leave
             await client.LeaveAsync();
+
+            // dispose connection
+            await client.DisposeAsync();
         }
         else
         {
@@ -65,7 +68,7 @@ public class MagicOnionClientApp : ConsoleAppBase
                     var index = x.index;
 
                     using var channel = await TryConnectAsync(host);
-                    var client = new PositionHubClient(Context.Logger, userName, index);
+                    var client = new GameHubClient(Context.Logger, userName, index);
 
                     // connect
                     await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
@@ -78,6 +81,9 @@ public class MagicOnionClientApp : ConsoleAppBase
 
                     // leave
                     await client.LeaveAsync();
+
+                    // dispose connection
+                    await client.DisposeAsync();
                 })
                 .ToArray();
             await Task.WhenAll(tasks);
@@ -107,14 +113,16 @@ public class MagicOnionClientApp : ConsoleAppBase
     }
 }
 
-public class PositionHubClient : IGameHubReceiver
+public class GameHubClient : IGameHubReceiver, IAsyncDisposable
 {
+    private GrpcChannel? _channel;
     private IGameHub? _client;
     private readonly ILogger _logger;
     private readonly string _userName;
     private int _index;
+    private bool _isSelfDisConnected;
 
-    public PositionHubClient(ILogger logger, string userName, int index)
+    public GameHubClient(ILogger logger, string userName, int index)
     {
         _logger = logger;
         _userName = userName;
@@ -123,7 +131,9 @@ public class PositionHubClient : IGameHubReceiver
 
     public async ValueTask ConnectAsync(GrpcChannel channel, string roomName, int capacity, CancellationToken ct)
     {
+        _channel = channel;
         _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(channel, this, cancellationToken: ct);
+        RegisterDisconnect(_client).FireAndForget(_logger);
 
         // create
         await _client.CreateRoomAsync(new GameRoomCreateRequest
@@ -139,6 +149,44 @@ public class PositionHubClient : IGameHubReceiver
             UserName = _userName,
         });
     }
+
+    public async Task RegisterDisconnect(IGameHub client)
+    {
+        try
+        {
+            // you can wait disconnected event
+            await client.WaitForDisconnect();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+        }
+        finally
+        {
+            // try-to-reconnect? logging event? close? etc...
+            _logger.LogInformation($"disconnected from the server.");
+
+            if (_isSelfDisConnected)
+            {
+                // there is no particular meaning
+                await Task.Delay(2000);
+
+                // reconnect
+                await ReconnectServerAsync();
+            }
+        }
+    }
+
+    private async Task ReconnectServerAsync()
+    {
+        _logger.LogInformation($"Reconnecting to the server...");
+        _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(_channel, this);
+        RegisterDisconnect(_client).FireAndForget(_logger);
+        _logger.LogInformation("Reconnected.");
+
+        _isSelfDisConnected = false;
+    }
+
 
     public async ValueTask ReadyAsync()
     {
@@ -169,6 +217,7 @@ public class PositionHubClient : IGameHubReceiver
     {
         ArgumentNullException.ThrowIfNull(_client);
         await _client.LeaveRoomAsync();
+        _isSelfDisConnected = true;
     }
 
     public void OnCreateRoom(string roomName)
@@ -222,5 +271,24 @@ public class PositionHubClient : IGameHubReceiver
             return _client.WaitForDisconnect();
         }
         return Task.CompletedTask;
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        if (_client is not null )
+        {
+            await _client.DisposeAsync();
+        }
+    }
+}
+
+public static class TaskExtensions
+{
+    public static void FireAndForget(this Task task, ILogger logger)
+    {
+        task.ContinueWith(x =>
+        {
+            logger.LogError(x.Exception, "TaskUnhandled");
+        }, TaskContinuationOptions.OnlyOnFaulted);
     }
 }
