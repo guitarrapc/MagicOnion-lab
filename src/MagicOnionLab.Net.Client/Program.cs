@@ -39,7 +39,7 @@ public class MagicOnionClientApp : ConsoleAppBase
             var index = 0;
             var userName = "foo";
             using var channel = await TryConnectAsync(host);
-            var client = new GameHubClient(Context.Logger, userName, index);
+            await using var client = new GameHubClient(Context.Logger, userName, index);
 
             // connect
             await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
@@ -52,9 +52,6 @@ public class MagicOnionClientApp : ConsoleAppBase
 
             // leave
             await client.LeaveAsync();
-
-            // dispose connection
-            await client.DisposeAsync();
         }
         else
         {
@@ -68,7 +65,7 @@ public class MagicOnionClientApp : ConsoleAppBase
                     var index = x.index;
 
                     using var channel = await TryConnectAsync(host);
-                    var client = new GameHubClient(Context.Logger, userName, index);
+                    await using var client = new GameHubClient(Context.Logger, userName, index);
 
                     // connect
                     await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
@@ -81,13 +78,12 @@ public class MagicOnionClientApp : ConsoleAppBase
 
                     // leave
                     await client.LeaveAsync();
-
-                    // dispose connection
-                    await client.DisposeAsync();
                 })
                 .ToArray();
             await Task.WhenAll(tasks);
         }
+
+        Context.Logger.LogInformation("complete.");
     }
 
     static async ValueTask<GrpcChannel> TryConnectAsync(string host, int tryCount = 3, int intervalSec = 3)
@@ -164,7 +160,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         finally
         {
             // try-to-reconnect? logging event? close? etc...
-            _logger.LogInformation($"disconnected from the server.");
+            _logger.LogInformation($"Disconnected from the server.");
 
             if (_isSelfDisConnected)
             {
