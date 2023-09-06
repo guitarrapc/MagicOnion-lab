@@ -25,10 +25,10 @@ public class MagicOnionClientApp : ConsoleAppBase
         var client = MagicOnionClient.Create<IMathService>(channel);
 
         var sum = await client.SumAsync(x, y);
-        Console.WriteLine($"{nameof(client.SumAsync)} result: {sum}");
+        Context.Logger.LogInformation($"{nameof(client.SumAsync)} result: {sum}");
 
         var sumMpo = await client.SumMpoAsync(x, y);
-        Console.WriteLine($"{nameof(client.SumMpoAsync)} Result: {sumMpo.Result}");
+        Context.Logger.LogInformation($"{nameof(client.SumMpoAsync)} Result: {sumMpo.Result}");
     }
 
     [Command(commandName: "position")]
