@@ -3,6 +3,8 @@ using MagicOnionLab.Shared.Mpos;
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace MagicOnionLab.Unity
 {
@@ -10,23 +12,31 @@ namespace MagicOnionLab.Unity
     {
         public int X => int.Parse(_x?.text ?? throw new ArgumentNullException(nameof(_x)));
         [SerializeField]
-        private TextMeshProUGUI? _x = default;
+        private TMP_InputField? _x = default;
 
         public int Y => int.Parse(_y?.text ?? throw new ArgumentNullException(nameof(_y)));
         [SerializeField]
-        private TextMeshProUGUI? _y = default;
+        private TMP_InputField? _y = default;
 
         [SerializeField]
-        private TMP_InputField? _textField = default;
+        private TextMeshProUGUI? _resultText = default;
 
+        public Button RequestButton => _requestButton ?? throw new ArgumentNullException(nameof(_requestButton));
+        [SerializeField]
+        private Button? _requestButton = default;
+
+        public void RegisterClickEvent(UnityAction onClick)
+        {
+            RequestButton.onClick.AddListener(onClick);
+        }
         public void SetResult(MathResultMpo result)
         {
-            if (_textField is null)
+            if (_resultText is null)
             {
-                throw new ArgumentNullException(nameof(_textField));
+                throw new ArgumentNullException(nameof(_resultText));
             }
 
-            _textField.text = $"Math Service result: '{result.Result}'";
+            _resultText.text = $"Math Service result: {result.Result}";
         }
     }
 }

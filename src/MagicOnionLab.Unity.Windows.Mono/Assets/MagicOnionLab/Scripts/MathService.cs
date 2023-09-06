@@ -16,16 +16,24 @@ namespace MagicOnionLab.Unity
             _logger = logger;
         }
 
-        public async Task<MathResultMpo> RequestAsync(int x, int y)
+        public async Task<int> RequestAsync(int x, int y)
         {
-            using var channel = await ChannelFactory.CreateAsync(Defines.Constants.ServerUrl);
+            var channel = await ChannelFactory.GetOrCreateAsync(Defines.Constants.ServerUrl);
             var client = MagicOnionClient.Create<IMathService>(channel);
 
             var sum = await client.SumAsync(x, y);
             _logger.LogInformation($"{nameof(MathService)}.{nameof(client.SumAsync)} '{x} + {y} = {sum}'");
 
+            return sum;
+        }
+
+        public async Task<MathResultMpo> RequestMpoAsync(int x, int y)
+        {
+            var channel = await ChannelFactory.GetOrCreateAsync(Defines.Constants.ServerUrl);
+            var client = MagicOnionClient.Create<IMathService>(channel);
+
             var sumMpo = await client.SumMpoAsync(x, y);
-            _logger.LogInformation($"{nameof(MathService)}.{nameof(client.SumMpoAsync)} '{x} + {y} = {sum}'");
+            _logger.LogInformation($"{nameof(MathService)}.{nameof(client.SumMpoAsync)} '{x} + {y} = {sumMpo.Result}'");
 
             return sumMpo;
         }
