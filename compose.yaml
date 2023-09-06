@@ -1,0 +1,7 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: ./src/MagicOnionLab.Server/Dockerfile
+    ports:
+      - 127.0.0.1:5288:80
