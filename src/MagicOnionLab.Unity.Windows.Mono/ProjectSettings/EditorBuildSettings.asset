@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MagicOnionLab.unity
-    guid: 248ac0fe94ab8c5408f8a5a1622f7b86
+    path: Assets/Scenes/MagicOnionLabHeadless.unity
+    guid: 5994b0d5ca29ab24d9d41eec2ea49fd2
   m_configObjects: {}
