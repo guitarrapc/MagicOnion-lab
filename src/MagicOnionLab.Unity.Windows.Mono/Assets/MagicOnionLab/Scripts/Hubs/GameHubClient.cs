@@ -2,12 +2,13 @@ using Grpc.Core;
 using MagicOnion.Client;
 using MagicOnionLab.Shared.Hubs;
 using MagicOnionLab.Shared.Mpos;
+using MagicOnionLab.Unity.Infrastructures.Loggers;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Hubs
 {
     public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {

@@ -1,6 +1,5 @@
 using System.Collections;
-using System.Threading.Tasks;
-using MagicOnionLab.Unity;
+using MagicOnionLab.Unity.Infrastructures.Loggers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -18,6 +17,7 @@ namespace PlayModeTests
         [Test]
         public void MathServiceSimplePasses()
         {
+            _logger.LogInformation(nameof(MathServiceSimplePasses));
             // Use the Assert class to test conditions
         }
 

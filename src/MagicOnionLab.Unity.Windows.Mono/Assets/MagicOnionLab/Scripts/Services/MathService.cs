@@ -2,10 +2,13 @@
 using MagicOnion.Client;
 using MagicOnionLab.Shared.Mpos;
 using MagicOnionLab.Shared.Services;
+using MagicOnionLab.Unity.Infrastructures;
+using MagicOnionLab.Unity.Infrastructures.Defines;
+using MagicOnionLab.Unity.Infrastructures.Loggers;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Services
 {
     public class MathService
     {
@@ -18,7 +21,7 @@ namespace MagicOnionLab.Unity
 
         public async Task<int> RequestAsync(int x, int y)
         {
-            var channel = await ChannelFactory.GetOrCreateAsync(Defines.Constants.ServerUrl);
+            var channel = await ChannelFactory.GetOrCreateAsync(SystemConstants.ServerUrl);
             var client = MagicOnionClient.Create<IMathService>(channel);
 
             var sum = await client.SumAsync(x, y);
@@ -29,7 +32,7 @@ namespace MagicOnionLab.Unity
 
         public async Task<MathResultMpo> RequestMpoAsync(int x, int y)
         {
-            var channel = await ChannelFactory.GetOrCreateAsync(Defines.Constants.ServerUrl);
+            var channel = await ChannelFactory.GetOrCreateAsync(SystemConstants.ServerUrl);
             var client = MagicOnionClient.Create<IMathService>(channel);
 
             var sumMpo = await client.SumMpoAsync(x, y);

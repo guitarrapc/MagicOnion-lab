@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Infrastructures.Loggers
 {
     public class UnityNullLogHandler : ILogHandler
     {

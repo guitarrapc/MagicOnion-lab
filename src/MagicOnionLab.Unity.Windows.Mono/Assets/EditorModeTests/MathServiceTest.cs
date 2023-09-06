@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Threading.Tasks;
 using MagicOnionLab.Unity;
+using MagicOnionLab.Unity.Infrastructures.Loggers;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

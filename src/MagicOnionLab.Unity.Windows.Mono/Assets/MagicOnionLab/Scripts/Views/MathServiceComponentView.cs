@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Views
 {
     public class MathServiceComponentView : MonoBehaviour
     {

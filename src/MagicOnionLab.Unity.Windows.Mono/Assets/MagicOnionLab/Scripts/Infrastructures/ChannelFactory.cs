@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Infrastructures
 {
     public static class ChannelFactory
     {
