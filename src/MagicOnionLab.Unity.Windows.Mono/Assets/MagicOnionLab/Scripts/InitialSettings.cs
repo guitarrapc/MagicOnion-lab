@@ -1,4 +1,3 @@
-using System.IO;
 using Grpc.Core;
 #if USE_GRPC_NET_CLIENT
 using Grpc.Net.Client;

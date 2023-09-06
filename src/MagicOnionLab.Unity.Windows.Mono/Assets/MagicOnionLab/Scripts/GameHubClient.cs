@@ -18,9 +18,9 @@ namespace MagicOnionLab.Unity
         private int _index;
         private bool _isSelfDisConnected;
 
-        public GameHubClient(string userName, int index)
+        public GameHubClient(ILogger logger, string userName, int index)
         {
-            _logger = new UnityCustomLogger(true);
+            _logger = logger;
             _userName = userName;
             _index = index;
         }
