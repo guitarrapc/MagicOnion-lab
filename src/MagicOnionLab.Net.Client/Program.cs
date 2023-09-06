@@ -4,13 +4,14 @@ using MagicOnionLab.Shared.Hubs;
 using MagicOnionLab.Shared.Mpos;
 using MagicOnionLab.Shared.Services;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 using UnityEngine;
 
 //args = new[] { "math", "--host", "http://localhost:5288", "--x", "123", "--y", "578" };
-//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
-//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
-//args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
-args = new[] { "position", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
+//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
+//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
+//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
+args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
 
 var app = ConsoleApp.Create(args);
 app.AddCommands<MagicOnionClientApp>();
@@ -21,7 +22,7 @@ public class MagicOnionClientApp : ConsoleAppBase
     [Command("math")]
     public async ValueTask MathClientService(string host, int x, int y)
     {
-        using var channel = await TryConnectAsync(host);
+        var channel = await ChannelFactory.GetOrCreateAsync(host);
         var client = MagicOnionClient.Create<IMathService>(channel);
 
         var sum = await client.SumAsync(x, y);
@@ -31,57 +32,35 @@ public class MagicOnionClientApp : ConsoleAppBase
         Context.Logger.LogInformation($"{nameof(client.SumMpoAsync)} Result: {sumMpo.Result}");
     }
 
-    [Command(commandName: "position")]
-    public async ValueTask PositionClientHub(string host, string roomName, int userCount = 1, int capacity = 1)
+    [Command(commandName: "game")]
+    public async ValueTask GameClientHub(string host, string roomName, int userCount = 1, int capacity = 1)
     {
-        if (userCount == 1)
-        {
-            var index = 0;
-            var userName = "foo";
-            using var channel = await TryConnectAsync(host);
-            await using var client = new GameHubClient(Context.Logger, userName, index);
+        var tasks = Enumerable.Range(1, userCount)
+            .Select((x, i) => (userName: $"foo{x}", index: i))
+            .Select(async x =>
+            {
+                await Task.Delay(200 * Random.Shared.Next(1, userCount) * x.index);
 
-            // connect
-            await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
+                var userName = x.userName;
+                var index = x.index;
 
-            // match
-            await client.ReadyAsync();
+                var channel = await ChannelFactory.GetOrCreateAsync(host);
+                await using var client = new GameHubClient(Context.Logger, userName, index);
 
-            // update
-            await client.UpdateUserInfoAsync();
+                // connect
+                await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
 
-            // leave
-            await client.LeaveAsync();
-        }
-        else
-        {
-            var tasks = Enumerable.Range(1, userCount)
-                .Select((x, i) => (userName: $"foo{x}", index: i))
-                .Select(async x =>
-                {
-                    await Task.Delay(200 * Random.Shared.Next(1, userCount) * x.index);
+                // match
+                await client.ReadyAsync();
 
-                    var userName = x.userName;
-                    var index = x.index;
+                // update
+                await client.UpdateUserInfoAsync();
 
-                    using var channel = await TryConnectAsync(host);
-                    await using var client = new GameHubClient(Context.Logger, userName, index);
-
-                    // connect
-                    await client.ConnectAsync(channel, roomName, capacity, Context.CancellationToken);
-
-                    // match
-                    await client.ReadyAsync();
-
-                    // update
-                    await client.UpdateUserInfoAsync();
-
-                    // leave
-                    await client.LeaveAsync();
-                })
-                .ToArray();
-            await Task.WhenAll(tasks);
-        }
+                // leave
+                await client.LeaveAsync();
+            })
+            .ToArray();
+        await Task.WhenAll(tasks);
 
         Context.Logger.LogInformation("complete.");
     }
@@ -277,6 +256,71 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         }
     }
 }
+
+public static class ChannelFactory
+{
+    private static ConcurrentDictionary<string, GrpcChannel> _channelHolder = new ConcurrentDictionary<string, GrpcChannel>();
+
+    /// <summary>
+    /// Create GrpcChannelx or Get from cache. Please do not Dispose GrpcChannelx obtained from this factory.
+    /// </summary>
+    /// <param name="host"></param>
+    /// <param name="tryCount"></param>
+    /// <param name="intervalSec"></param>
+    /// <returns></returns>
+    /// <exception cref="ApplicationException"></exception>
+    public static async ValueTask<GrpcChannel> GetOrCreateAsync(string host, int tryCount = 3, int intervalSec = 3)
+    {
+        if (_channelHolder.TryGetValue(host, out var cached))
+        {
+            return cached;
+        }
+
+        for (var i = 0; i < tryCount; i++)
+        {
+            try
+            {
+                var channel = GrpcChannel.ForAddress(host);
+                if (_channelHolder.TryAdd(host, channel))
+                {
+                    return channel;
+                }
+                else
+                {
+                    // duplicated, dispose it.
+                    channel.Dispose();
+
+                    // re-obtain already in-use channel
+                    if (_channelHolder.TryGetValue(host, out var cached2))
+                    {
+                        return cached2;
+                    }
+                }
+            }
+            catch (Grpc.Core.RpcException)
+            {
+                if (i < tryCount)
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(intervalSec));
+                    continue;
+                }
+                throw;
+            }
+        }
+        throw new ApplicationException($"Cannot connect to the server. {host}");
+    }
+
+    public static void Clear()
+    {
+        foreach (var channel in _channelHolder)
+        {
+            channel.Value.Dispose();
+        }
+
+        _channelHolder.Clear();
+    }
+}
+
 
 public static class TaskExtensions
 {

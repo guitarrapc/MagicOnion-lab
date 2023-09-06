@@ -18,6 +18,7 @@ namespace MagicOnionLab.Unity
             StaticCompositeResolver.Instance.Register(
                 MagicOnion.Resolvers.MagicOnionResolver.Instance,
                 MessagePack.Resolvers.GeneratedResolver.Instance,
+                MessagePack.Resolvers.StandardResolver.Instance,
                 BuiltinResolver.Instance,
                 PrimitiveObjectResolver.Instance
             );
