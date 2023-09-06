@@ -18,7 +18,7 @@ namespace MagicOnionLab.Unity
 
         public async Task<MathResultMpo> RequestAsync(int x, int y)
         {
-            using var channel = await ChannelFactory.CreateAsync(Constants.ServerUrl);
+            using var channel = await ChannelFactory.CreateAsync(Defines.Constants.ServerUrl);
             var client = MagicOnionClient.Create<IMathService>(channel);
 
             var sum = await client.SumAsync(x, y);

@@ -1,4 +1,4 @@
-namespace MagicOnionLab.Unity
+namespace MagicOnionLab.Unity.Defines
 {
     public static class Constants
     {
