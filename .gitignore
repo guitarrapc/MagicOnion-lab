@@ -402,3 +402,6 @@ FodyWeavers.xsd
 
 # Custom - allow Unity .meta files
 !**/*.Unity.*/**/*.meta
+# Custom - allow Unity Plugin files
+!**/*.Unity.*/Assets/Plugins/**/*
+!**/*.Unity.*/[Pp]ackages/*

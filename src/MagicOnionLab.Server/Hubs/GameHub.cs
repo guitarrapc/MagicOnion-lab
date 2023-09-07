@@ -97,6 +97,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
 
     protected override ValueTask OnDisconnected()
     {
+        _logger.LogInformation($"Client disconnected {Context.ContextId}");
         return CompletedTask;
     }
 }
