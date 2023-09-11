@@ -53,7 +53,10 @@ namespace MagicOnionLab.Unity.Views
             {
                 throw new ArgumentNullException(nameof(_resultText));
             }
-            _resultText.text = "";
+            lock (_lock)
+            {
+                _resultText.text = "";
+            }
         }
     }
 }
