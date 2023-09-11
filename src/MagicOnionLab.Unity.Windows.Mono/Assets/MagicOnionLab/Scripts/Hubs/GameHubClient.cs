@@ -17,15 +17,15 @@ namespace MagicOnionLab.Unity.Hubs
         private readonly ILogger _logger;
         private readonly string _userName;
         private int _index;
-        private Action<string> _onReceiveWriter;
+        private Action<string> _onReceive;
         private bool _isSelfDisConnected;
 
-        public GameHubClient(ILogger logger, Action<string> onReceiveWriter, string userName, int index)
+        public GameHubClient(ILogger logger, Action<string> onReceive, string userName, int index)
         {
             _logger = logger;
             _userName = userName;
             _index = index;
-            _onReceiveWriter = onReceiveWriter;
+            _onReceive = onReceive;
         }
 
         public async ValueTask ConnectAsync(ChannelBase channel, string roomName, int capacity, CancellationToken ct)
@@ -123,7 +123,7 @@ namespace MagicOnionLab.Unity.Hubs
         {
             var log = $"Create room: {roomName}";
             _logger.LogInformation(log);
-            _onReceiveWriter(log);
+            _onReceive(log);
         }
 
         public void OnJoinRoom(string userName)
@@ -132,7 +132,7 @@ namespace MagicOnionLab.Unity.Hubs
             {
                 var log = $"Join user: {userName}";
                 _logger.LogInformation(log);
-                _onReceiveWriter(log);
+                _onReceive(log);
             }
         }
 
@@ -142,7 +142,7 @@ namespace MagicOnionLab.Unity.Hubs
             {
                 var log = $"Leave user: {userName}";
                 _logger.LogInformation(log);
-                _onReceiveWriter(log);
+                _onReceive(log);
             }
         }
 
@@ -150,7 +150,7 @@ namespace MagicOnionLab.Unity.Hubs
         {
             var log = $"Matching complete.";
             _logger.LogInformation(log);
-            _onReceiveWriter(log);
+            _onReceive(log);
         }
 
         public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
@@ -159,7 +159,7 @@ namespace MagicOnionLab.Unity.Hubs
             {
                 var log = $"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})";
                 _logger.LogInformation(log);
-                _onReceiveWriter(log);
+                _onReceive(log);
             }
         }
 
