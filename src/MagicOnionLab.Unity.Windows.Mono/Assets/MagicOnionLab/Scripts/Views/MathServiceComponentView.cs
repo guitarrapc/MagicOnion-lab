@@ -1,4 +1,5 @@
 #nullable enable
+using MagicOnionLab.Shared.Mpos;
 using System;
 using TMPro;
 using UnityEngine;
@@ -24,13 +25,35 @@ namespace MagicOnionLab.Unity.Views
         [SerializeField]
         private Button? _requestButton = default;
 
+        [Header("Randomize view values for each execution")]
+        [SerializeField]
+        private bool _randomValues = false;
+
         private object _lock = new object();
+
+        /// <summary>
+        /// Initialize View
+        /// </summary>
+        public void Initialize()
+        {
+            ClearResult();
+            Randomize();
+        }
+
+        /// <summary>
+        /// Execute on Complete
+        /// </summary>
+        public void ExecutionComplete()
+        {
+            Randomize();
+        }
 
         public void RegisterClickEvent(UnityAction onClick)
         {
             RequestButton.onClick.AddListener(onClick);
         }
-        public void AppendResult(int result)
+
+        public void AppendResult(MathResultMpo mpo)
         {
             if (_resultText is null)
             {
@@ -39,9 +62,10 @@ namespace MagicOnionLab.Unity.Views
 
             lock (_lock)
             {
-                _resultText.text = _resultText.text + $"\n{result}"; // zatsu
+                _resultText.text = $"{(_resultText.text != "" ? $"{_resultText.text}\n" : "")}{mpo.X} + {mpo.Y} = {mpo.Result}"; // zatsu
             }
         }
+
         public void ClearResult()
         {
             if (_resultText is null)
@@ -51,6 +75,16 @@ namespace MagicOnionLab.Unity.Views
             lock (_lock)
             {
                 _resultText.text = "";
+            }
+        }
+
+        private void Randomize()
+        {
+            if (_randomValues)
+            {
+                // roomName
+                _x!.text = UnityEngine.Random.Range(10, 9999).ToString();
+                _y!.text = UnityEngine.Random.Range(10000, 999999).ToString();
             }
         }
     }

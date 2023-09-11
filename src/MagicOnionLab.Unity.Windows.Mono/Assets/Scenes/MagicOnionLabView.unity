@@ -1845,7 +1845,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7366013, g: 0.7647059, b: 0.6862745, a: 1}
+  m_Color: {r: 0.9716981, g: 0.971493, b: 0.73702383, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2084,7 +2084,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.7372549, g: 0.764151, b: 0.6862745, a: 1}
+  m_Color: {r: 0.972549, g: 0.972549, b: 0.7372549, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3174,7 +3174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.557565, g: 0.76076233, b: 0.7735849, a: 1}
+  m_Color: {r: 0.3684229, g: 0.72472703, b: 0.745283, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -6591,6 +6591,7 @@ MonoBehaviour:
   _y: {fileID: 1722014041}
   _resultText: {fileID: 681859143}
   _requestButton: {fileID: 1327949637}
+  _randomValues: 1
 --- !u!224 &1797756190
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7110,7 +7111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.62352943, g: 0.57850444, b: 0.48235294, a: 1}
+  m_Color: {r: 0.8475412, g: 0.8490566, b: 0.6039516, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7674,6 +7675,7 @@ MonoBehaviour:
   _capacity: {fileID: 1690960664}
   _resultText: {fileID: 612861085}
   _requestButton: {fileID: 451334238}
+  _randomValues: 1
 --- !u!1 &2116296055
 GameObject:
   m_ObjectHideFlags: 0

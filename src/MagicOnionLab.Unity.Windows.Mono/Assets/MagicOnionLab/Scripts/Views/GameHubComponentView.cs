@@ -28,12 +28,34 @@ namespace MagicOnionLab.Unity.Views
         [SerializeField]
         private Button? _requestButton = default;
 
+        [Header("Randomize view values for each execution")]
+        [SerializeField]
+        private bool _randomValues = false;
+
         private object _lock = new object();
+
+        /// <summary>
+        /// Initialize View
+        /// </summary>
+        public void Initialize()
+        {
+            ClearResult();
+            Randomize();
+        }
+
+        /// <summary>
+        /// Execute on Complete
+        /// </summary>
+        public void ExecutionComplete()
+        {
+            Randomize();
+        }
 
         public void RegisterClickEvent(UnityAction onClick)
         {
             RequestButton.onClick.AddListener(onClick);
         }
+
         public void AppendResult(string text)
         {
             if (_resultText is null)
@@ -43,7 +65,7 @@ namespace MagicOnionLab.Unity.Views
 
             lock (_lock)
             {
-                _resultText.text = _resultText.text + $"\n{text}"; // zatsu
+                _resultText.text = $"{(_resultText.text != "" ? $"{_resultText.text}\n" : "")}{text}"; // zatsu
             }
         }
 
@@ -56,6 +78,24 @@ namespace MagicOnionLab.Unity.Views
             lock (_lock)
             {
                 _resultText.text = "";
+            }
+        }
+
+        private void Randomize()
+        {
+            if (_randomValues)
+            {
+                var roomName = "";
+                var roomLength = UnityEngine.Random.Range(4, 6);
+                for (var i = 0; i < roomLength; i++)
+                {
+                    // A-Za-z
+                    roomName += (char)UnityEngine.Random.Range(65, 122);
+                }
+                _roomName!.text = roomName;
+                _userCount!.text = UnityEngine.Random.Range(4, 8).ToString();
+                _capacity!.text = _userCount.text;
+
             }
         }
     }

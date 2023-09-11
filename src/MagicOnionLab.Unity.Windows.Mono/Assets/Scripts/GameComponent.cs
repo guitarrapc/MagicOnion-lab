@@ -25,7 +25,7 @@ namespace MagicOnionLab.Unity
         private async void Start()
         {
             await MathServiceAsync();
-            await GameCLientHubAsync();
+            await GametHubAsync();
         }
 
         private void OnDestroy()
@@ -42,11 +42,12 @@ namespace MagicOnionLab.Unity
             var mathClient = new MathService(_logger);
             if (_mathServiceComponentView is not null)
             {
-                _mathServiceComponentView.ClearResult();
+                _mathServiceComponentView.Initialize();
                 _mathServiceComponentView.RegisterClickEvent(async () =>
                 {
                     var mathResult = await mathClient.RequestMpoAsync(_mathServiceComponentView.X, _mathServiceComponentView.Y);
-                    _mathServiceComponentView.AppendResult(mathResult.Result);
+                    _mathServiceComponentView.AppendResult(mathResult);
+                    _mathServiceComponentView.ExecutionComplete();
                 });
             }
             else
@@ -60,12 +61,13 @@ namespace MagicOnionLab.Unity
             }
         }
 
-        private async Task GameCLientHubAsync()
+        private async Task GametHubAsync()
         {
             if (_gameHubComponentView is not null)
             {
+                _gameHubComponentView.Initialize();
+
                 var executing = false;
-                _gameHubComponentView.ClearResult();
                 _gameHubComponentView.RegisterClickEvent(async () =>
                 {
                     if (!executing)
@@ -75,7 +77,8 @@ namespace MagicOnionLab.Unity
                         var userCount = _gameHubComponentView.UserCount;
                         var capacity = _gameHubComponentView.Capacity;
                         await ExecuteAsync(roomName, userCount, capacity);
-                        _gameHubComponentView?.AppendResult($"complete.");
+                        _gameHubComponentView.AppendResult($"Complete.");
+                        _gameHubComponentView.ExecutionComplete();
                         executing = false;
                     }
                     else
@@ -91,6 +94,7 @@ namespace MagicOnionLab.Unity
 
             async Task ExecuteAsync(string roomName, int userCount, int capacity)
             {
+                _gameHubComponentView?.AppendResult($"# Begin with following parameters. roomName {roomName}, userCount {userCount}, capacity {capacity}.");
                 var tasks = Enumerable.Range(1, userCount)
                     .Select((x, i) => (userName: $"foo{x}", index: i))
                     .Select(async x =>
