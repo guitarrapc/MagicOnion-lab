@@ -1,5 +1,4 @@
 #nullable enable
-using MagicOnionLab.Shared.Mpos;
 using System;
 using TMPro;
 using UnityEngine;
@@ -8,15 +7,19 @@ using UnityEngine.UI;
 
 namespace MagicOnionLab.Unity.Views
 {
-    public class MathServiceComponentView : MonoBehaviour
+    public class GameHubComponentView : MonoBehaviour
     {
-        public int X => int.Parse(_x?.text ?? throw new ArgumentNullException(nameof(_x)));
+        public string RoomName => _roomName?.text ?? throw new ArgumentNullException(nameof(_roomName));
         [SerializeField]
-        private TMP_InputField? _x = default;
+        private TMP_InputField? _roomName = default;
 
-        public int Y => int.Parse(_y?.text ?? throw new ArgumentNullException(nameof(_y)));
+        public int UserCount => int.Parse(_userCount?.text ?? throw new ArgumentNullException(nameof(_userCount)));
         [SerializeField]
-        private TMP_InputField? _y = default;
+        private TMP_InputField? _userCount = default;
+
+        public int Capacity => int.Parse(_userCount?.text ?? throw new ArgumentNullException(nameof(_capacity)));
+        [SerializeField]
+        private TMP_InputField? _capacity = default;
 
         [SerializeField]
         private TextMeshProUGUI? _resultText = default;
@@ -53,7 +56,7 @@ namespace MagicOnionLab.Unity.Views
             RequestButton.onClick.AddListener(onClick);
         }
 
-        public void AppendResult(MathResultMpo mpo)
+        public void AppendResult(string text)
         {
             if (_resultText is null)
             {
@@ -62,7 +65,7 @@ namespace MagicOnionLab.Unity.Views
 
             lock (_lock)
             {
-                _resultText.text = $"{(_resultText.text != "" ? $"{_resultText.text}\n" : "")}{mpo.X} + {mpo.Y} = {mpo.Result}"; // zatsu
+                _resultText.text = $"{(_resultText.text != "" ? $"{_resultText.text}\n" : "")}{text}"; // zatsu
             }
         }
 
@@ -82,9 +85,17 @@ namespace MagicOnionLab.Unity.Views
         {
             if (_randomValues)
             {
-                // roomName
-                _x!.text = UnityEngine.Random.Range(10, 9999).ToString();
-                _y!.text = UnityEngine.Random.Range(10000, 999999).ToString();
+                var roomName = "";
+                var roomLength = UnityEngine.Random.Range(4, 6);
+                for (var i = 0; i < roomLength; i++)
+                {
+                    // A-Za-z
+                    roomName += (char)UnityEngine.Random.Range(65, 122);
+                }
+                _roomName!.text = roomName;
+                _userCount!.text = UnityEngine.Random.Range(4, 8).ToString();
+                _capacity!.text = _userCount.text;
+
             }
         }
     }
