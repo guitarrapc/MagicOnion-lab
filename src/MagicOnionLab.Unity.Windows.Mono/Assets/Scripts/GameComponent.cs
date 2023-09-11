@@ -19,11 +19,13 @@ namespace MagicOnionLab.Unity
 
         [SerializeField]
         private MathServiceComponentView? _mathServiceComponentView = default;
+        [SerializeField]
+        private GameHubComponentView? _gameHubComponentView = default;
 
         private async void Start()
         {
             await MathServiceAsync();
-            await GameCLientHubAsync(SystemConstants.ServerUrl, "foo", 8, 8);
+            await GameCLientHubAsync();
         }
 
         private void OnDestroy()
@@ -40,10 +42,11 @@ namespace MagicOnionLab.Unity
             var mathClient = new MathService(_logger);
             if (_mathServiceComponentView is not null)
             {
+                _mathServiceComponentView.ClearResult();
                 _mathServiceComponentView.RegisterClickEvent(async () =>
                 {
                     var mathResult = await mathClient.RequestMpoAsync(_mathServiceComponentView.X, _mathServiceComponentView.Y);
-                    _mathServiceComponentView.SetResult(mathResult);
+                    _mathServiceComponentView.AppendResult(mathResult.Result);
                 });
             }
             else
@@ -57,36 +60,68 @@ namespace MagicOnionLab.Unity
             }
         }
 
-        private async Task GameCLientHubAsync(string host, string roomName, int userCount = 1, int capacity = 1)
+        private async Task GameCLientHubAsync()
         {
-            var tasks = Enumerable.Range(1, userCount)
-                .Select((x, i) => (userName: $"foo{x}", index: i))
-                .Select(async x =>
+            if (_gameHubComponentView is not null)
+            {
+                var executing = false;
+                _gameHubComponentView.ClearResult();
+                _gameHubComponentView.RegisterClickEvent(async () =>
                 {
-                    await Task.Delay(200 * Random.Range(1, userCount) * x.index);
+                    if (!executing)
+                    {
+                        executing = true;
+                        var roomName = _gameHubComponentView.RoomName;
+                        var userCount = _gameHubComponentView.UserCount;
+                        var capacity = _gameHubComponentView.Capacity;
+                        await ExecuteAsync(roomName, userCount, capacity);
+                        _gameHubComponentView?.AppendResult($"complete.");
+                        executing = false;
+                    }
+                    else
+                    {
+                        _gameHubComponentView?.AppendResult($"Already executing, skip request.");
+                    }
+                });
+            }
+            else
+            {
+                await ExecuteAsync("foo", 8, 8);
+            }
 
-                    var userName = x.userName;
-                    var index = x.index;
+            async Task ExecuteAsync(string roomName, int userCount, int capacity)
+            {
+                var tasks = Enumerable.Range(1, userCount)
+                    .Select((x, i) => (userName: $"foo{x}", index: i))
+                    .Select(async x =>
+                    {
+                        await Task.Delay(200 * Random.Range(1, userCount) * x.index);
 
-                    var channel = await ChannelFactory.GetOrCreateAsync(host);
-                    await using var client = new GameHubClient(_logger, userName, index);
+                        var userName = x.userName;
+                        var index = x.index;
 
-                    // connect
-                    await client.ConnectAsync(channel, roomName, capacity, destroyCancellationToken);
+                        var channel = await ChannelFactory.GetOrCreateAsync(SystemConstants.ServerUrl);
+                        await using var client = new GameHubClient(_logger, text => _gameHubComponentView?.AppendResult(text), userName, index);
 
-                    // match
-                    await client.ReadyAsync();
+                        // connect
+                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Connecting room.");
+                        await client.ConnectAsync(channel, roomName, capacity, destroyCancellationToken);
 
-                    // update
-                    await client.UpdateUserInfoAsync();
+                        // match
+                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Matching and send ready.");
+                        await client.ReadyAsync();
 
-                    // leave
-                    await client.LeaveAsync();
-                })
-                .ToArray();
-            await Task.WhenAll(tasks);
+                        // update
+                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Updating info.");
+                        await client.UpdateUserInfoAsync();
 
-            _logger.LogInformation("complete.");
+                        // leave
+                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Leaving room.");
+                        await client.LeaveAsync();
+                    })
+                    .ToArray();
+                await Task.WhenAll(tasks);
+            }
         }
     }
 }

@@ -17,13 +17,15 @@ namespace MagicOnionLab.Unity.Hubs
         private readonly ILogger _logger;
         private readonly string _userName;
         private int _index;
+        private Action<string> _onReceiveWriter;
         private bool _isSelfDisConnected;
 
-        public GameHubClient(ILogger logger, string userName, int index)
+        public GameHubClient(ILogger logger, Action<string> onReceiveWriter, string userName, int index)
         {
             _logger = logger;
             _userName = userName;
             _index = index;
+            _onReceiveWriter = onReceiveWriter;
         }
 
         public async ValueTask ConnectAsync(ChannelBase channel, string roomName, int capacity, CancellationToken ct)
@@ -90,7 +92,7 @@ namespace MagicOnionLab.Unity.Hubs
             if (_client is null) throw new ArgumentNullException(nameof(_client));
 
             // ready
-            _logger.LogInformation($"Ready matching: {_userName}");
+            _logger.LogInformation($"Ready matching");
             await _client.ReadyMatchAsync();
         }
 
@@ -119,14 +121,18 @@ namespace MagicOnionLab.Unity.Hubs
 
         public void OnCreateRoom(string roomName)
         {
-            _logger.LogInformation($"Create room: {roomName}");
+            var log = $"Create room: {roomName}";
+            _logger.LogInformation(log);
+            _onReceiveWriter(log);
         }
 
         public void OnJoinRoom(string userName)
         {
             if (_userName.Equals(userName, StringComparison.Ordinal))
             {
-                _logger.LogInformation($"Join user: {userName}");
+                var log = $"Join user: {userName}";
+                _logger.LogInformation(log);
+                _onReceiveWriter(log);
             }
         }
 
@@ -134,20 +140,26 @@ namespace MagicOnionLab.Unity.Hubs
         {
             if (_userName.Equals(userName, StringComparison.Ordinal))
             {
-                _logger.LogInformation($"Leave user: {userName}");
+                var log = $"Leave user: {userName}";
+                _logger.LogInformation(log);
+                _onReceiveWriter(log);
             }
         }
 
         public void OnMatchCompleted()
         {
-            _logger.LogInformation($"Matching complete.");
+            var log = $"Matching complete.";
+            _logger.LogInformation(log);
+            _onReceiveWriter(log);
         }
 
         public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
         {
             if (_userName.Equals(response.UserName, StringComparison.Ordinal))
             {
-                _logger.LogInformation($"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})");
+                var log = $"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})";
+                _logger.LogInformation(log);
+                _onReceiveWriter(log);
             }
         }
 
