@@ -438,3 +438,17 @@ void grpcsharp_test_call_start_unary_echo() {
   fprintf(stderr, "Should never reach here");
   abort();
 }
+
+// add for Windows `fatal error LNK1120: 3 unresolved externals`
+void* dlopen(const char* filename, int flags) {
+  fprintf(stderr, "Should never reach here");
+  abort();
+}
+char* dlerror(void) {
+  fprintf(stderr, "Should never reach here");
+  abort();
+}
+void* dlsym(void* handle, const char* symbol) {
+  fprintf(stderr, "Should never reach here");
+  abort();
+}
