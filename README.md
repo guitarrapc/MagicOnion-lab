@@ -21,7 +21,7 @@
 Unity - Desktop
 
 * [x] src/MagicOnionLab.Unity.Windows.Mono: Windows Unity Client (Mono)
-* [ ] src/MagicOnionLab.Unity.Windows.IL2CPP: Windows Unity Client (IL2CPP)
+* [x] src/MagicOnionLab.Unity.Windows.IL2CPP: Windows Unity Client (IL2CPP)
 * [ ] src/MagicOnionLab.Unity.Linux.Mono: Linux Unity Client (Mono)
 * [ ] src/MagicOnionLab.Unity.Linux.IL2CPP: Linux Unity Client (IL2CPP)
 * [ ] src/MagicOnionLab.Unity.macOS.Mono: Linux Unity Client (Mono)
