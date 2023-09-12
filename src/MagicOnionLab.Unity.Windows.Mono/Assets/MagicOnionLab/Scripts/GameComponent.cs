@@ -18,14 +18,17 @@ namespace MagicOnionLab.Unity
         private CancellationTokenSource _cts = new CancellationTokenSource(System.TimeSpan.FromMinutes(10));
 
         [SerializeField]
+        private GameAdminView? _gameAdminView = default;
+        [SerializeField]
         private MathServiceComponentView? _mathServiceComponentView = default;
         [SerializeField]
         private GameHubComponentView? _gameHubComponentView = default;
 
         private async void Start()
         {
-            await MathServiceAsync();
-            await GametHubAsync();
+            await HandleGameAdminAsync();
+            await HandleMathServiceAsync();
+            await HandleGametHubAsync();
         }
 
         private void OnDestroy()
@@ -43,7 +46,15 @@ namespace MagicOnionLab.Unity
             await ChannelFactory.ClearAsync();
         }
 
-        private async Task MathServiceAsync()
+        private async Task HandleGameAdminAsync()
+        {
+            if (_gameAdminView is not null)
+            {
+                _gameAdminView.RegisterQuitGameClickEvent(() => ApplicationHelper.Quit());
+            }
+        }
+
+        private async Task HandleMathServiceAsync()
         {
             var mathClient = new MathService(_logger);
             if (_mathServiceComponentView is not null)
@@ -67,7 +78,7 @@ namespace MagicOnionLab.Unity
             }
         }
 
-        private async Task GametHubAsync()
+        private async Task HandleGametHubAsync()
         {
             if (_gameHubComponentView is not null)
             {
