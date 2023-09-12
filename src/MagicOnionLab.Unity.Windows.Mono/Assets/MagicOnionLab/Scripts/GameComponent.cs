@@ -73,19 +73,14 @@ namespace MagicOnionLab.Unity
             {
                 _gameHubComponentView.Initialize();
 
-                var executing = false;
                 _gameHubComponentView.RegisterClickEvent(async () =>
                 {
-                    if (!executing)
+                    if (!_gameHubComponentView.Executing)
                     {
-                        executing = true;
-                        var roomName = _gameHubComponentView.RoomName;
-                        var userCount = _gameHubComponentView.UserCount;
-                        var capacity = _gameHubComponentView.Capacity;
-                        await ExecuteAsync(roomName, userCount, capacity);
-                        _gameHubComponentView.AppendResult($"Complete.");
+                        _gameHubComponentView.ExecutionBegin();
+                        await ExecuteAsync(_gameHubComponentView.RoomName, _gameHubComponentView.UserCount, _gameHubComponentView.Capacity);
                         _gameHubComponentView.ExecutionComplete();
-                        executing = false;
+                        _gameHubComponentView.AppendResult($"Complete.");
                     }
                     else
                     {
