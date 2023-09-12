@@ -14,7 +14,7 @@
       "dependencies": {}
     },
     "com.guitarrapc.magiconionlab.unity": {
-      "version": "file:C:/git/guitarrapc/MagicOnion-lab/src/MagicOnionLab.Unity.Windows.Mono/Assets/MagicOnionLab",
+      "version": "file:../../MagicOnionLab.Unity.Windows.Mono/Assets/MagicOnionLab",
       "depth": 0,
       "source": "local",
       "dependencies": {}
