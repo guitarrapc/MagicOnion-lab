@@ -32,6 +32,11 @@ namespace MagicOnionLab.Unity.Views
         [SerializeField]
         private bool _randomValues = false;
 
+        public bool Executing { get => _executing; set => _executing = value; }
+        [Header("Indicate currently executing or not")]
+        [SerializeField]
+        private bool _executing = false;
+
         private object _lock = new object();
 
         /// <summary>
@@ -46,9 +51,18 @@ namespace MagicOnionLab.Unity.Views
         /// <summary>
         /// Execute on Complete
         /// </summary>
+        public void ExecutionBegin()
+        {
+            _executing = true;
+        }
+
+        /// <summary>
+        /// Execute on Complete
+        /// </summary>
         public void ExecutionComplete()
         {
             Randomize();
+            _executing = false;
         }
 
         public void RegisterClickEvent(UnityAction onClick)
