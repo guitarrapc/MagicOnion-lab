@@ -28,13 +28,15 @@ namespace MagicOnionLab.Unity
             await GametHubAsync();
         }
 
-        private void OnDestroy()
+        private async void OnDestroy()
         {
             if (_cts is not null)
             {
                 _cts.Cancel();
                 _cts.Dispose();
             }
+
+            await ChannelFactory.ClearAsync();
         }
 
         private async Task MathServiceAsync()
