@@ -37,6 +37,12 @@ namespace MagicOnionLab.Unity
             }
         }
 
+        private async void OnApplicationQuit()
+        {
+            _logger.LogInformation("Quitting game.");
+            await ChannelFactory.ClearAsync();
+        }
+
         private async Task MathServiceAsync()
         {
             var mathClient = new MathService(_logger);
