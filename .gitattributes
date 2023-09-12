@@ -3,3 +3,5 @@
 *.sh    text  eol=lf
 *.yaml  text  eol=lf
 *.yml   text  eol=lf
+
+**/*.Generated.cs* linguist-generated=true
