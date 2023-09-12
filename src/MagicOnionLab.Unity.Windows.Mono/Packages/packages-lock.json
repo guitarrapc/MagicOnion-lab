@@ -7,8 +7,14 @@
       "dependencies": {},
       "hash": "e8ff04ef44c39ff453d03e1239fdef4cec9fb02f"
     },
-    "com.guitarrapc.magiconionlab.shared.unity": {
+    "com.guitarrapc.magiconionlab.shared": {
       "version": "file:../../MagicOnionLab.Shared",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.guitarrapc.magiconionlab.unity.shared": {
+      "version": "file:../../MagicOnionLab.Unity.Shared/Generated",
       "depth": 0,
       "source": "local",
       "dependencies": {}

@@ -1,7 +1,7 @@
 {
-  "name": "com.guitarrapc.magiconionlab.shared.unity",
+  "name": "com.guitarrapc.magiconionlab.shared",
   "version": "1.0.0",
-  "displayName": "MagicOnionLab.Shared.Unity",
-  "description": "MagicOnionLab.Shared.Unity",
+  "displayName": "MagicOnionLab.Shared",
+  "description": "MagicOnionLab.Shared",
   "unity": "2022.1"
 }

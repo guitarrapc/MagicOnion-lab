@@ -1,7 +1,8 @@
 {
   "dependencies": {
     "com.cysharp.slnmerge": "https://github.com/Cysharp/SlnMerge.git?path=src",
-    "com.guitarrapc.magiconionlab.shared.unity": "file:../../MagicOnionLab.Shared",
+    "com.guitarrapc.magiconionlab.shared": "file:../../MagicOnionLab.Shared",
+    "com.guitarrapc.magiconionlab.unity.shared": "file:../../MagicOnionLab.Unity.Shared/Generated",
     "com.unity.collab-proxy": "2.0.5",
     "com.unity.feature.2d": "2.0.0",
     "com.unity.ide.rider": "3.0.24",
