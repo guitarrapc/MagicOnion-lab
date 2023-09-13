@@ -5,7 +5,7 @@
         "MessagePack",
         "MagicOnion.Abstractions",
         "MagicOnion.Client",
-        "MagicOnionLab.Shared.Unity"
+        "MagicOnionLab.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

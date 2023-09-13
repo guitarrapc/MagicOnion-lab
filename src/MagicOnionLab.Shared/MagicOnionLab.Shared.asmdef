@@ -1,5 +1,5 @@
 {
-    "name": "MagicOnionLab.Shared.Unity",
+    "name": "MagicOnionLab.Shared",
     "references": [
         "MessagePack",
         "MessagePack.Annotations",

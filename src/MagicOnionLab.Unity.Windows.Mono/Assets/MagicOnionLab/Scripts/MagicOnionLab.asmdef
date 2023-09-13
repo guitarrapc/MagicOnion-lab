@@ -9,7 +9,7 @@
         "MessagePack",
         "MessagePack.Annotations",
         "MagicOnionLab.Unity.Shared",
-        "MagicOnionLab.Shared.Unity"
+        "MagicOnionLab.Shared"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
