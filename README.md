@@ -36,10 +36,12 @@ Unity - Mobile
 
 # Project Reference
 
+Referencing between .NET csproj is using [Project Reference](https://learn.microsoft.com/ja-jp/dotnet/core/tools/dotnet-add-reference). However Unity does not support Project Reference. Therefore Unity project reference is using [Package Manager](https://docs.unity3d.com/2019.4/Documentation/Manual/Packages.html) with local file `package.json`. Also Unity's external assembly refernce is resolved with [assembly definition file](https://docs.unity3d.com/2018.4/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
+
 ```mermaid
 flowchart LR
 
-  subgraph NET
+  subgraph .NET
     Client(["MagicOnionLab.Net.Client"])
     Server(["MagicOnionLab.Server"])
     Shared["MagicOnionLab.Shared"]
