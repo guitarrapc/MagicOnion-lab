@@ -1,5 +1,5 @@
 {
-    "name": "MagicOnionLab",
+    "name": "MagicOnionLab.Unity",
     "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",

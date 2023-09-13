@@ -14,13 +14,13 @@
       "dependencies": {}
     },
     "com.guitarrapc.magiconionlab.unity": {
-      "version": "file:../../MagicOnionLab.Unity.Windows.Mono/Assets/MagicOnionLab",
+      "version": "file:../../MagicOnionLab.Unity.Windows.Mono/Assets/MagicOnionLab.Unity",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "com.guitarrapc.magiconionlab.unity.shared": {
-      "version": "file:../../MagicOnionLab.Unity.Shared/Generated",
+      "version": "file:../../MagicOnionLab.Unity.Windows.Mono/Assets/Scripts/Generated",
       "depth": 0,
       "source": "local",
       "dependencies": {}

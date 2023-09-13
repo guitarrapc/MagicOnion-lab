@@ -13,12 +13,6 @@
       "source": "local",
       "dependencies": {}
     },
-    "com.guitarrapc.magiconionlab.unity.shared": {
-      "version": "file:../../MagicOnionLab.Unity.Shared/Generated",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {}
-    },
     "com.unity.2d.animation": {
       "version": "9.0.3",
       "depth": 1,

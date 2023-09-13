@@ -40,45 +40,38 @@ Unity - Mobile
 flowchart LR
 
   subgraph NET
-    Client["MagicOnionLab.Net.Client"]
-    Server["MagicOnionLab.Server"]
+    Client(["MagicOnionLab.Net.Client"])
+    Server(["MagicOnionLab.Server"])
     Shared["MagicOnionLab.Shared"]
-    UnityShared["MagicOnionLab.Unity.Shared"]
   end
 
-  subgraph Unity Windows Mono
-    UnityWindowsMono["MagicOnionLab.Unity.Windows.Mono"]
-  end
-  subgraph Unity Windows IL2CPP
-    UnityWindowsIl2cpp["MagicOnionLab.Unity.Windows.IL2CPP"]
-  end
-  subgraph Unity Linux Mono
-    UnityLinuxMono["MagicOnionLab.Unity.Linux.Mono"]
-  end
-  subgraph Unity Linux IL2CPP
-    UnityLinuxIl2cpp["MagicOnionLab.Unity.Linux.IL2CPP"]
+  subgraph Unity
+    subgraph UnityWinM[MagicOnionLab.Unity.Windows.Mono]
+      UnityWindowsMono(["Unity"])
+      MagicOnionLabUnity["MagicOnionLab.Unity"]
+      UnityShared["MagicOnionLab.Unity.Shared"]
+    end
+    subgraph UnityWinI[MagicOnionLab.Unity.Windows.IL2CPP]
+      UnityWindowsIl2cpp(["Unity"])
+    end
+    subgraph UnityLinM[MagicOnionLab.Unity.Linux.Mono]
+      UnityLinuxMono(["Unity"])
+    end
+    subgraph UnityLinI[MagicOnionLab.Unity.Linux.IL2CPP]
+      UnityLinuxIl2cpp(["Unity"])
+    end
   end
 
   Server -.Reference.-> Shared
   Client -.Reference.-> Shared
-  Shared --Generate--> UnityShared
+  Shared ==Build & Generate===> UnityShared
 
-  UnityShared -.Reference.-> Shared
+  UnityShared -.Reference..-> Shared
 
-  UnityWindowsMono -.Reference.-> Shared
-  UnityWindowsMono -.Reference.-> UnityShared
+  MagicOnionLabUnity -.Reference.-> Shared
+  MagicOnionLabUnity -.Reference.-> UnityShared
 
-  UnityWindowsIl2cpp -.Reference.-> Shared
-  UnityWindowsIl2cpp -.Reference.-> UnityShared
-  UnityWindowsIl2cpp -.Reference.-> UnityWindowsMono
-
-  UnityLinuxMono -.Reference.-> Shared
-  UnityLinuxMono -.Reference.-> UnityShared
-  UnityLinuxMono -.Reference.-> UnityWindowsMono
-
-  UnityLinuxIl2cpp -.Reference.-> Shared
-  UnityLinuxIl2cpp -.Reference.-> UnityShared
-  UnityLinuxIl2cpp -.Reference.-> UnityWindowsMono
+  UnityWinI & UnityLinM & UnityLinI -.Reference.-> Shared & UnityShared & MagicOnionLabUnity
 ```
 
 # FAQ
