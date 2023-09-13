@@ -36,7 +36,7 @@ Unity - Mobile
 
 # Project Reference
 
-Referencing between .NET csproj is using [Project Reference](https://learn.microsoft.com/ja-jp/dotnet/core/tools/dotnet-add-reference). However Unity does not support Project Reference. Therefore Unity project reference is using [Package Manager](https://docs.unity3d.com/2019.4/Documentation/Manual/Packages.html) with local file `package.json`. Also Unity's external assembly refernce is resolved with [assembly definition file](https://docs.unity3d.com/2018.4/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
+Referencing between .NET csproj is using [Project Reference](https://learn.microsoft.com/ja-jp/dotnet/core/tools/dotnet-add-reference). However Unity does not support Project Reference. Therefore Unity project reference is using [Unity Package Manager (a.k.a UPM)](https://docs.unity3d.com/2019.4/Documentation/Manual/Packages.html) with local file `package.json`. Also Unity's external assembly refernce is resolved with [assembly definition file(a.k.a asmdef)](https://docs.unity3d.com/2018.4/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
 
 ```mermaid
 flowchart LR
@@ -64,16 +64,16 @@ flowchart LR
     end
   end
 
-  Server -.Reference.-> Shared
-  Client -.Reference.-> Shared
+  Server -.Project Reference.-> Shared
+  Client -.Project Reference.-> Shared
   Shared ==Build & Generate===> UnityShared
 
-  UnityShared -.Reference..-> Shared
+  UnityShared -.asmdef Reference..-> Shared
 
-  MagicOnionLabUnity -.Reference.-> Shared
-  MagicOnionLabUnity -.Reference.-> UnityShared
+  MagicOnionLabUnity -.asdmdef Reference.-> Shared
+  MagicOnionLabUnity -.asdmdef Reference.-> UnityShared
 
-  UnityWinI & UnityLinM & UnityLinI -.Reference.-> Shared & UnityShared & MagicOnionLabUnity
+  UnityWinI & UnityLinM & UnityLinI -.UPM Reference.-> Shared & UnityShared & MagicOnionLabUnity
 ```
 
 # FAQ
