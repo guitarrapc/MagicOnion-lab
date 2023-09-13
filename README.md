@@ -34,6 +34,53 @@ Unity - Mobile
 * [ ] src/MagicOnionLab.Unity.iOS.Mono: Android Unity Client (Mono)
 * [ ] src/MagicOnionLab.Unity.iOS.IL2CPP: Android Unity Client (IL2CPP)
 
+# Project Reference
+
+```mermaid
+flowchart LR
+
+  subgraph NET
+    Client["MagicOnionLab.Net.Client"]
+    Server["MagicOnionLab.Server"]
+    Shared["MagicOnionLab.Shared"]
+    UnityShared["MagicOnionLab.Unity.Shared"]
+  end
+
+  subgraph Unity Windows Mono
+    UnityWindowsMono["MagicOnionLab.Unity.Windows.Mono"]
+  end
+  subgraph Unity Windows IL2CPP
+    UnityWindowsIl2cpp["MagicOnionLab.Unity.Windows.IL2CPP"]
+  end
+  subgraph Unity Linux Mono
+    UnityLinuxMono["MagicOnionLab.Unity.Linux.Mono"]
+  end
+  subgraph Unity Linux IL2CPP
+    UnityLinuxIl2cpp["MagicOnionLab.Unity.Linux.IL2CPP"]
+  end
+
+  Server -.Reference.-> Shared
+  Client -.Reference.-> Shared
+  Shared --Generate--> UnityShared
+
+  UnityShared -.Reference.-> Shared
+
+  UnityWindowsMono -.Reference.-> Shared
+  UnityWindowsMono -.Reference.-> UnityShared
+
+  UnityWindowsIl2cpp -.Reference.-> Shared
+  UnityWindowsIl2cpp -.Reference.-> UnityShared
+  UnityWindowsIl2cpp -.Reference.-> UnityWindowsMono
+
+  UnityLinuxMono -.Reference.-> Shared
+  UnityLinuxMono -.Reference.-> UnityShared
+  UnityLinuxMono -.Reference.-> UnityWindowsMono
+
+  UnityLinuxIl2cpp -.Reference.-> Shared
+  UnityLinuxIl2cpp -.Reference.-> UnityShared
+  UnityLinuxIl2cpp -.Reference.-> UnityWindowsMono
+```
+
 # FAQ
 
 ## Shared - MagicOnion.Generator (dotnet-moc) not support Central Package Magement
