@@ -99,17 +99,30 @@ namespace MagicOnionLab.Unity.Views
         {
             if (_randomValues)
             {
+                // _roomName!.text = RandomAlphabet(4, 6)
+                _roomName!.text = RandomUUID(10);
+                _userCount!.text = UnityEngine.Random.Range(4, 8).ToString();
+                _capacity!.text = _userCount.text;
+
+            }
+
+            // GUID RoomName
+            static string RandomUUID(int max)
+            {
+                var roomName = Guid.NewGuid().ToString();
+                return roomName.AsSpan().Slice(0, max).ToString();
+            }
+            // Alphabet RoomName
+            static string RandomAlphabet(int min, int max)
+            {
                 var roomName = "";
-                var roomLength = UnityEngine.Random.Range(4, 6);
+                var roomLength = UnityEngine.Random.Range(min, max);
                 for (var i = 0; i < roomLength; i++)
                 {
                     // A-Za-z
                     roomName += (char)UnityEngine.Random.Range(65, 122);
                 }
-                _roomName!.text = roomName;
-                _userCount!.text = UnityEngine.Random.Range(4, 8).ToString();
-                _capacity!.text = _userCount.text;
-
+                return roomName;
             }
         }
     }

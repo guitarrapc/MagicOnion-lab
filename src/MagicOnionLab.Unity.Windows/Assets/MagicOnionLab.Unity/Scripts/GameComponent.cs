@@ -62,9 +62,16 @@ namespace MagicOnionLab.Unity
                 _mathServiceComponentView.Initialize();
                 _mathServiceComponentView.RegisterClickEvent(async () =>
                 {
-                    var mathResult = await mathClient.RequestMpoAsync(_mathServiceComponentView.X, _mathServiceComponentView.Y);
-                    _mathServiceComponentView.AppendResult(mathResult);
-                    _mathServiceComponentView.ExecutionComplete();
+                    try
+                    {
+                        var mathResult = await mathClient.RequestMpoAsync(_mathServiceComponentView.X, _mathServiceComponentView.Y);
+                        _mathServiceComponentView.AppendResult(mathResult);
+                        _mathServiceComponentView.ExecutionComplete();
+                    }
+                    catch (System.Exception)
+                    {
+                        _mathServiceComponentView.AppendResult($"Request Failure.");
+                    }
                 });
             }
             else
@@ -116,24 +123,32 @@ namespace MagicOnionLab.Unity
                         var userName = x.userName;
                         var index = x.index;
 
-                        var channel = await ChannelFactory.GetOrCreateAsync(SystemConstants.ServerUrl);
-                        await using var client = new GameHubClient(_logger, text => _gameHubComponentView?.AppendResult(text), userName, index);
+                        try
+                        {
+                            var channel = await ChannelFactory.GetOrCreateAsync(SystemConstants.ServerUrl);
+                            await using var client = new GameHubClient(_logger, text => _gameHubComponentView?.AppendResult(text), userName, index);
 
-                        // connect
-                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Connecting room.");
-                        await client.ConnectAsync(channel, roomName, capacity, destroyCancellationToken);
+                            // connect
+                            _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Connecting room.");
+                            await client.ConnectAsync(channel, roomName, capacity, destroyCancellationToken);
 
-                        // match
-                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Matching and send ready.");
-                        await client.ReadyAsync();
+                            // match
+                            _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Matching and send ready.");
+                            await client.ReadyAsync();
 
-                        // update
-                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Updating info.");
-                        await client.UpdateUserInfoAsync();
+                            // update
+                            _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Updating info.");
+                            await client.UpdateUserInfoAsync();
 
-                        // leave
-                        _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Leaving room.");
-                        await client.LeaveAsync();
+                            // leave
+                            _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Leaving room.");
+                            await client.LeaveAsync();
+                        }
+                        catch (System.Exception ex)
+                        {
+                            _gameHubComponentView?.AppendResult($"{userName}@{roomName}: Request Failure.");
+                            _logger.LogException(ex);
+                        }
                     })
                     .ToArray();
                 await Task.WhenAll(tasks);
