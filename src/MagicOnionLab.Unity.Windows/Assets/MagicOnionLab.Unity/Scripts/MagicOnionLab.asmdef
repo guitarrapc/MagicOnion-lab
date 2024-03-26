@@ -1,0 +1,23 @@
+{
+    "name": "MagicOnionLab.Unity",
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro",
+        "MagicOnion.Abstractions",
+        "MagicOnion.Client",
+        "MagicOnion.Unity",
+        "MessagePack",
+        "MessagePack.Annotations",
+        "MagicOnionLab.Unity.Shared",
+        "MagicOnionLab.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

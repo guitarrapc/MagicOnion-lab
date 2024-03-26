@@ -34,6 +34,48 @@ Unity - Mobile
 * [ ] src/MagicOnionLab.Unity.iOS.Mono: Android Unity Client (Mono)
 * [ ] src/MagicOnionLab.Unity.iOS.IL2CPP: Android Unity Client (IL2CPP)
 
+# Project Reference
+
+Referencing between .NET csproj is using [Project Reference](https://learn.microsoft.com/ja-jp/dotnet/core/tools/dotnet-add-reference). However Unity does not support Project Reference. Therefore Unity project reference is using [Unity Package Manager (a.k.a UPM)](https://docs.unity3d.com/2019.4/Documentation/Manual/Packages.html) with local file `package.json`. Also Unity's external assembly refernce is resolved with [assembly definition file(a.k.a asmdef)](https://docs.unity3d.com/2018.4/Documentation/Manual/ScriptCompilationAssemblyDefinitionFiles.html).
+
+```mermaid
+flowchart LR
+
+  subgraph .NET
+    Client(["MagicOnionLab.Net.Client"])
+    Server(["MagicOnionLab.Server"])
+    Shared["MagicOnionLab.Shared"]
+  end
+
+  subgraph Unity
+    subgraph UnityWinM[MagicOnionLab.Unity.Windows.Mono]
+      UnityWindowsMono(["Unity"])
+      MagicOnionLabUnity["MagicOnionLab.Unity"]
+      UnityShared["MagicOnionLab.Unity.Shared"]
+    end
+    subgraph UnityWinI[MagicOnionLab.Unity.Windows.IL2CPP]
+      UnityWindowsIl2cpp(["Unity"])
+    end
+    subgraph UnityLinM[MagicOnionLab.Unity.Linux.Mono]
+      UnityLinuxMono(["Unity"])
+    end
+    subgraph UnityLinI[MagicOnionLab.Unity.Linux.IL2CPP]
+      UnityLinuxIl2cpp(["Unity"])
+    end
+  end
+
+  Server -.Project Reference.-> Shared
+  Client -.Project Reference.-> Shared
+  Shared ==Build & Generate===> UnityShared
+
+  UnityShared -.asmdef Reference..-> Shared
+
+  MagicOnionLabUnity -.asdmdef Reference.-> Shared
+  MagicOnionLabUnity -.asdmdef Reference.-> UnityShared
+
+  UnityWinI & UnityLinM & UnityLinI -.UPM Reference.-> Shared & UnityShared & MagicOnionLabUnity
+```
+
 # FAQ
 
 ## Shared - MagicOnion.Generator (dotnet-moc) not support Central Package Magement
@@ -93,7 +135,7 @@ Then manage NuGet package versions directly in Shared csproj.
 
 * gRPC: Download `grpc_unity_package.2.47.0-dev202204190851.zip` package from [Daily build of 2022/4/19](https://packages.grpc.io/archive/2022/04/67538122780f8a081c774b66884289335c290cbe-f15a2c1c-582b-4c51-acf2-ab6d711d2c59/index.xml), unzip and move `Grpc.Core` & `Grpc.Core.Api` folder to Unity's Assets/Plugins.
 * MessagePack: Install `MessagePack.Unity.unitypackage` from [MessagePack-CSharp/Releases/v2.5.124](https://github.com/MessagePack-CSharp/MessagePack-CSharp/releases/tag/v2.5.124).
-* MagicOnion: Install `MagicOnion.Client.Unity.unitypackage` from [MagicOnion/Releases/Ver.5.1.8].
+* MagicOnion: Install `MagicOnion.Client.Unity.unitypackage` from [MagicOnion/Releases/Ver.5.1.8](https://github.com/Cysharp/MagicOnion/releases/tag/5.1.8).
 
 > [!NOTE]: iOS `Assets/Plugins/Grpc.Core/runtimes/ios/libgrpc.a` and Andorid packages `Assets/Plugins/Grpc.Core/runtimes/android/PLATFORM/libgrpc_csharp_ext.so` are removed as they are over git limitation 100mb. You need strip them to keep in git.
 >

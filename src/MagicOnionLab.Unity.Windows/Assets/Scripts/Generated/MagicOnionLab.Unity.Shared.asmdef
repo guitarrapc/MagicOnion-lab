@@ -1,0 +1,19 @@
+{
+    "name": "MagicOnionLab.Unity.Shared",
+    "rootNamespace": "",
+    "references": [
+        "MessagePack",
+        "MagicOnion.Abstractions",
+        "MagicOnion.Client",
+        "MagicOnionLab.Shared"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

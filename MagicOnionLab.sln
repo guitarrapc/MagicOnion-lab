@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MagicOnionLab.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0F795B87-4105-4F07-803E-B6C74E992EBD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{33F9A688-7849-4264-8C5C-BE1E858421AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{49363876-CF76-4E34-85AF-44C0317AB533} = {33F9A688-7849-4264-8C5C-BE1E858421AB}
+		{4FAF5B38-BDC8-49A2-8BBF-269E784C2DAE} = {33F9A688-7849-4264-8C5C-BE1E858421AB}
+		{EEB3AF1E-3DC2-4821-8EA8-58438289D007} = {33F9A688-7849-4264-8C5C-BE1E858421AB}
 		{0EC3E6B4-C5E0-4A57-8EFF-FAB5A5342E6E} = {0F795B87-4105-4F07-803E-B6C74E992EBD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
