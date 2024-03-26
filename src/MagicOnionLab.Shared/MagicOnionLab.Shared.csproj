@@ -34,11 +34,4 @@
     <Exec Command="dotnet tool run mpc $(_MessagePackGeneratorArguments)" />
   </Target>
 
-  <Target Name="GenerateMagicOnion" AfterTargets="Build">
-    <PropertyGroup>
-      <_MagicOnionGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows.Mono/Assets/Scripts/Generated/MagicOnion.Generated.cs</_MagicOnionGeneratorArguments>
-    </PropertyGroup>
-    <Exec Command="dotnet tool run dotnet-moc $(_MagicOnionGeneratorArguments)" />
-  </Target>
-
 </Project>

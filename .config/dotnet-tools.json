@@ -3,15 +3,9 @@
   "isRoot": true,
   "tools": {
     "messagepack.generator": {
-      "version": "2.5.124",
+      "version": "2.5.129",
       "commands": [
         "mpc"
-      ]
-    },
-    "magiconion.generator": {
-      "version": "5.1.8",
-      "commands": [
-        "dotnet-moc"
       ]
     }
   }
