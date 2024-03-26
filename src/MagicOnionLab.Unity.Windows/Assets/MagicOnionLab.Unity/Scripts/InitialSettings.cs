@@ -24,7 +24,8 @@ namespace MagicOnionLab.Unity
                 MessagePack.Resolvers.GeneratedResolver.Instance,
                 BuiltinResolver.Instance,
                 PrimitiveObjectResolver.Instance,
-                MessagePack.Unity.UnityResolver.Instance
+                MessagePack.Unity.UnityResolver.Instance,
+                StandardResolver.Instance
             );
 
             MessagePackSerializer.DefaultOptions = MessagePackSerializer.DefaultOptions
