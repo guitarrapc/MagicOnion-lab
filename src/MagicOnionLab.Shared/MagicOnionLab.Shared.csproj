@@ -13,23 +13,13 @@
     <PackageReference Include="MessagePack.UnityShims" Version="2.5.140" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="**\package.json" />
-    <None Remove="**\*.asmdef" />
-    <None Remove="**\*.meta" />
-
-    <Compile Remove="bin\**;obj\**" />
-    <EmbeddedResource Remove="bin\**;obj\**" />
-    <None Remove="bin\**;obj\**" />
-  </ItemGroup>
-
   <Target Name="RestoreLocalTools" BeforeTargets="GenerateMessagePack;GenerateMagicOnion">
     <Exec Command="dotnet tool restore" />
   </Target>
 
   <Target Name="GenerateMessagePack" AfterTargets="Build">
     <PropertyGroup>
-      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows.Mono/Assets/Scripts/Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
+      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows/Assets/Scripts/MessagePack.Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
     </PropertyGroup>
     <Exec Command="dotnet tool run mpc $(_MessagePackGeneratorArguments)" />
   </Target>
