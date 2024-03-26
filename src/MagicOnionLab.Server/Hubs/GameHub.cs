@@ -78,7 +78,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
         ArgumentNullException.ThrowIfNull(_room);
 
-        _logger.LogTrace($$"""{{nameof(UpdateUserInfonAsync)}}: {{_userName}} => {{{request.Position.x}},{{request.Position.y}},{{request.Position.z}}} (Room: {{_roomName}})""");
+        _logger.LogTrace($"{nameof(UpdateUserInfonAsync)}: {_userName} => {{{request.Position.x},{request.Position.y},{request.Position.z}}} (Room: {_roomName})");
 
         _model.TryUpdateUserverInfo(_roomName, _userName, request.Position);
         Broadcast(_room).OnUpdateUserInfo(new GameRoomUserInfoUpdateResponse

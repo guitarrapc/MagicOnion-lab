@@ -245,7 +245,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         if (_userName.Equals(response.UserName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($$"""Update UserInfo: userName {{response.UserName}}, position: {{{response.Position.x}},{{response.Position.y}},{{response.Position.z}} (Room {{_roomName}})""");
+            _logger.LogInformation($"Update UserInfo: userName {response.UserName}, position: {{{response.Position.x},{response.Position.y},{response.Position.z}}} (Room {_roomName})");
         }
     }
 
