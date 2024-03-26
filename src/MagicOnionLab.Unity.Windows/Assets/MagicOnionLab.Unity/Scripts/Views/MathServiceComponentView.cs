@@ -66,6 +66,18 @@ namespace MagicOnionLab.Unity.Views
             }
         }
 
+        public void AppendResult(string message)
+        {
+            if (_resultText is null)
+            {
+                throw new ArgumentNullException(nameof(_resultText));
+            }
+
+            lock (_lock)
+            {
+                _resultText.text = $"{(_resultText.text != "" ? $"{_resultText.text}\n" : "")}{message}"; // zatsu
+            }
+        }
         public void ClearResult()
         {
             if (_resultText is null)
