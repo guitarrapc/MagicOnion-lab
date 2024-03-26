@@ -19,7 +19,7 @@
 
   <Target Name="GenerateMessagePack" AfterTargets="Build">
     <PropertyGroup>
-      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows/Assets/Scripts/MessagePack.Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
+      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity/Assets/Scripts/MessagePack.Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
     </PropertyGroup>
     <Exec Command="dotnet tool run mpc $(_MessagePackGeneratorArguments)" />
   </Target>
