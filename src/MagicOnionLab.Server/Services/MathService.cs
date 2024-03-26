@@ -17,13 +17,13 @@ public class MathService : ServiceBase<IMathService>, IMathService
 
     public async UnaryResult<int> SumAsync(int x, int y)
     {
-        _logger.LogDebug("{nameof} called. x: {x}, y: {y}.", nameof(SumAsync), x, y);
+        _logger.LogDebug($"{nameof(MathService)} called. x: {x}, y: {y}.", nameof(SumAsync), x, y);
         return x + y;
     }
 
     public async UnaryResult<MathResultMpo> SumMpoAsync(int x, int y)
     {
-        _logger.LogDebug("{nameof} called. x: {x}, y: {y}.", nameof(SumMpoAsync), x, y);
+        _logger.LogDebug("{nameof(MathService)} called. x: {x}, y: {y}.", nameof(SumMpoAsync), x, y);
         return new MathResultMpo
         {
             X = x,

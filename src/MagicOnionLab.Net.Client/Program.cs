@@ -6,6 +6,7 @@ using MagicOnionLab.Shared.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using UnityEngine;
+using ValueTaskSupplement;
 
 if (!args.Any())
 {
@@ -13,7 +14,8 @@ if (!args.Any())
     //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
     //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
     //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
-    args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
+    //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
+    args = new[] { "all", "--host", "http://localhost:5288" };
 }
 
 var app = ConsoleApp.Create(args);
@@ -22,6 +24,17 @@ app.Run();
 
 public class MagicOnionClientApp : ConsoleAppBase
 {
+    [Command("all")]
+    public async ValueTask All(string host)
+    {
+        await MathClientService(host, Random.Shared.Next(), Random.Shared.Next());
+        var room1 = GameClientHub(host, "room1", 1, 1);
+        var room2 = GameClientHub(host, "room2", 2, 2);
+        var room3 = GameClientHub(host, "room3", 4, 4);
+        var room4 = GameClientHub(host, "room4", 8, 8);
+        await ValueTaskEx.WhenAll(room1, room2, room3, room4);
+    }
+
     [Command("math")]
     public async ValueTask MathClientService(string host, int x, int y)
     {
@@ -39,7 +52,7 @@ public class MagicOnionClientApp : ConsoleAppBase
     public async ValueTask GameClientHub(string host, string roomName, int userCount = 1, int capacity = 1)
     {
         var tasks = Enumerable.Range(1, userCount)
-            .Select((x, i) => (userName: $"foo{x}", index: i))
+            .Select((x, i) => (userName: $"{roomName}-foo{x}", index: i))
             .Select(async x =>
             {
                 await Task.Delay(200 * Random.Shared.Next(1, userCount) * x.index);
@@ -97,6 +110,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     private IGameHub? _client;
     private readonly ILogger _logger;
     private readonly string _userName;
+    private string? _roomName;
     private int _index;
     private bool _isSelfDisConnected;
 
@@ -109,6 +123,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
 
     public async ValueTask ConnectAsync(GrpcChannel channel, string roomName, int capacity, CancellationToken ct)
     {
+        _roomName = roomName;
         _channel = channel;
         _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(channel, this, cancellationToken: ct);
         RegisterDisconnect(_client).FireAndForget(_logger);
@@ -142,7 +157,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         finally
         {
             // try-to-reconnect? logging event? close? etc...
-            _logger.LogInformation($"Disconnected from the server.");
+            _logger.LogInformation($"Disconnected from the server. (Room: {_roomName})");
 
             if (_isSelfDisConnected)
             {
@@ -159,10 +174,10 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(_channel);
 
-        _logger.LogInformation($"Reconnecting to the server...");
+        _logger.LogInformation($"Reconnecting to the server... (Room {_roomName})");
         _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(_channel, this);
         RegisterDisconnect(_client).FireAndForget(_logger);
-        _logger.LogInformation("Reconnected.");
+        _logger.LogInformation($"Reconnected. (Room {_roomName})");
 
         _isSelfDisConnected = false;
     }
@@ -173,7 +188,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(_client);
 
         // ready
-        _logger.LogInformation($"Ready matching: {_userName}");
+        _logger.LogInformation($"Ready matching: {_userName} (Room {_roomName})");
         await _client.ReadyMatchAsync();
     }
 
@@ -209,7 +224,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Join user: {userName}");
+            _logger.LogInformation($"Join user: {userName} (Room {_roomName})");
         }
     }
 
@@ -217,20 +232,20 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Leave user: {userName}");
+            _logger.LogInformation($"Leave user: {userName} (Room {_roomName})");
         }
     }
 
     public void OnMatchCompleted()
     {
-        _logger.LogInformation($"Matching complete.");
+        _logger.LogInformation($"Matching complete. (Room {_roomName})");
     }
 
     public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
     {
         if (_userName.Equals(response.UserName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})");
+            _logger.LogInformation($$"""Update UserInfo: userName {{response.UserName}}, position: {{{response.Position.x}},{{response.Position.y}},{{response.Position.z}} (Room {{_roomName}})""");
         }
     }
 
