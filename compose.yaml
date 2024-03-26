@@ -5,3 +5,9 @@ services:
       dockerfile: ./src/MagicOnionLab.Server/Dockerfile
     ports:
       - 127.0.0.1:5288:80
+
+  client:
+    build:
+      context: .
+      dockerfile: ./src/MagicOnionLab.Net.Client/Dockerfile
+    command: [ "game", "--host", "http://server:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" ]

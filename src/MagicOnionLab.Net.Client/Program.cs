@@ -7,11 +7,14 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using UnityEngine;
 
-//args = new[] { "math", "--host", "http://localhost:5288", "--x", "123", "--y", "578" };
-//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
-//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
-//args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
-args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
+if (!args.Any())
+{
+    //args = new[] { "math", "--host", "http://localhost:5288", "--x", "123", "--y", "578" };
+    //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "1", "--capacity", "1" };
+    //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "2", "--capacity", "2" };
+    //args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "4", "--capacity", "4" };
+    args = new[] { "game", "--host", "http://localhost:5288", "--room-name", "room1", "--user-count", "8", "--capacity", "8" };
+}
 
 var app = ConsoleApp.Create(args);
 app.AddCommands<MagicOnionClientApp>();
@@ -154,6 +157,8 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
 
     private async Task ReconnectServerAsync()
     {
+        ArgumentNullException.ThrowIfNull(_channel);
+
         _logger.LogInformation($"Reconnecting to the server...");
         _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(_channel, this);
         RegisterDisconnect(_client).FireAndForget(_logger);
