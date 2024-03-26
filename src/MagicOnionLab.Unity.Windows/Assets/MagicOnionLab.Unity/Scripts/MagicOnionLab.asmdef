@@ -1,5 +1,5 @@
 {
-    "name": "MagicOnionLab.Unity",
+    "name": "MagicOnionLab",
     "rootNamespace": "",
     "references": [
         "Unity.TextMeshPro",
@@ -8,8 +8,11 @@
         "MagicOnion.Unity",
         "MessagePack",
         "MessagePack.Annotations",
-        "MagicOnionLab.Unity.Shared",
-        "MagicOnionLab.Shared"
+        "MagicOnionLab.Shared",
+        "Cysharp.Net.Http.YetAnotherHttpHandler",
+        "MessagePack.Generated",
+        "MagicOnion.Serialization.MessagePack",
+        "MagicOnion.Serialization.MemoryPack"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

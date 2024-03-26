@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.cysharp.magiconion": {
+      "version": "https://github.com/Cysharp/MagicOnion.git?path=src/MagicOnion.Client.Unity/Assets/Scripts/MagicOnion#6.1.2",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5b432a9dfc6f810b749365589b9439d7160a8136"
+    },
     "com.cysharp.slnmerge": {
       "version": "https://github.com/Cysharp/SlnMerge.git?path=src",
       "depth": 0,
@@ -7,11 +14,32 @@
       "dependencies": {},
       "hash": "e8ff04ef44c39ff453d03e1239fdef4cec9fb02f"
     },
+    "com.cysharp.yetanotherhttphandler": {
+      "version": "https://github.com/Cysharp/YetAnotherHttpHandler.git?path=src/YetAnotherHttpHandler#1.2.0",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "37998fea906aa83ec6adb1a0b24c48eebdcf0da6"
+    },
+    "com.github-glitchenzo.nugetforunity": {
+      "version": "https://github.com/GlitchEnzo/NuGetForUnity.git?path=/src/NuGetForUnity",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b93741e2b5fe9073e169853ade0039c7cf2595f0"
+    },
     "com.guitarrapc.magiconionlab.shared": {
       "version": "file:../../MagicOnionLab.Shared",
       "depth": 0,
       "source": "local",
       "dependencies": {}
+    },
+    "com.neuecc.messagepack": {
+      "version": "2.5.140",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
     },
     "com.unity.2d.animation": {
       "version": "9.1.0",

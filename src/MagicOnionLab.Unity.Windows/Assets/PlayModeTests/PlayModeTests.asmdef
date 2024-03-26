@@ -5,7 +5,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "MagicOnionLab.Shared",
-        "MagicOnionLab.Unity"
+        "MagicOnionLab"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

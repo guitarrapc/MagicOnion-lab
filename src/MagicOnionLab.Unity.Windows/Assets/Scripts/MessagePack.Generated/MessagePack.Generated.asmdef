@@ -1,0 +1,17 @@
+{
+    "name": "MessagePack.Generated",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bbde805d927e795439d7a746d1749cab",
+        "GUID:5ee57ca12d15e874e8d6ef1090d9458f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

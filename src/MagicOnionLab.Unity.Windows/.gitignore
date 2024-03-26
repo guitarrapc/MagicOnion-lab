@@ -74,3 +74,6 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 InitTestScene*.unity*
+
+# Remove NugetForUnity dll path
+Assets/Packages

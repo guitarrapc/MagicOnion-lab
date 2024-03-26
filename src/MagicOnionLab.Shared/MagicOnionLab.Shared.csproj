@@ -8,19 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MagicOnion.Abstractions" Version="5.1.8" />
-    <PackageReference Include="MessagePack" Version="2.5.124" />
-    <PackageReference Include="MessagePack.UnityShims" Version="2.5.124" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="**\package.json" />
-    <None Remove="**\*.asmdef" />
-    <None Remove="**\*.meta" />
-
-    <Compile Remove="bin\**;obj\**" />
-    <EmbeddedResource Remove="bin\**;obj\**" />
-    <None Remove="bin\**;obj\**" />
+    <PackageReference Include="MagicOnion.Abstractions" Version="6.1.2" />
+    <PackageReference Include="MessagePack" Version="2.5.140" />
+    <PackageReference Include="MessagePack.UnityShims" Version="2.5.140" />
   </ItemGroup>
 
   <Target Name="RestoreLocalTools" BeforeTargets="GenerateMessagePack;GenerateMagicOnion">
@@ -29,16 +19,9 @@
 
   <Target Name="GenerateMessagePack" AfterTargets="Build">
     <PropertyGroup>
-      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows.Mono/Assets/Scripts/Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
+      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows/Assets/Scripts/MessagePack.Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
     </PropertyGroup>
     <Exec Command="dotnet tool run mpc $(_MessagePackGeneratorArguments)" />
-  </Target>
-
-  <Target Name="GenerateMagicOnion" AfterTargets="Build">
-    <PropertyGroup>
-      <_MagicOnionGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity.Windows.Mono/Assets/Scripts/Generated/MagicOnion.Generated.cs</_MagicOnionGeneratorArguments>
-    </PropertyGroup>
-    <Exec Command="dotnet tool run dotnet-moc $(_MagicOnionGeneratorArguments)" />
   </Target>
 
 </Project>

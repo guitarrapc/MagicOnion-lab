@@ -22,7 +22,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
 
     public async ValueTask CreateRoomAsync(GameRoomCreateRequest request)
     {
-        _logger.LogTrace($"{nameof(CreateRoomAsync)}: {request.RoomName} {request.Capacity}");
+        _logger.LogTrace($"{nameof(CreateRoomAsync)}: {request.Capacity} (Room: {request.RoomName})");
 
         _room = await Group.AddAsync(request.RoomName);
         _roomName = request.RoomName;
@@ -37,7 +37,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
     {
         ArgumentNullException.ThrowIfNull(_room);
 
-        _logger.LogInformation($"{nameof(JoinRoomAsync)}: {request.UserName} {request.RoomName}");
+        _logger.LogInformation($"{nameof(JoinRoomAsync)}: {request.UserName} (Room: {request.RoomName})");
 
         _userName = request.UserName;
         _model.TryJoinRoom(request.RoomName, request.UserName);
@@ -49,7 +49,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNull(_room);
         ArgumentNullException.ThrowIfNull(_userName);
 
-        _logger.LogInformation($"{nameof(LeaveRoomAsync)}: {_userName}");
+        _logger.LogInformation($"{nameof(LeaveRoomAsync)}: {_userName} (Room: {_roomName})");
 
         await _room.RemoveAsync(Context);
         Broadcast(_room).OnLeaveRoom(_userName);
@@ -61,7 +61,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNullOrEmpty(_roomName);
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
 
-        _logger.LogInformation($"{nameof(ReadyMatchAsync)}: {_userName}");
+        _logger.LogInformation($"{nameof(ReadyMatchAsync)}: {_userName} (Room: {_roomName})");
 
         _model.ReadyMatch(_roomName, _userName, true);
         await _model.WaitMatchingCompletedAsync(_roomName); // wait until all members sent ready for match
@@ -78,7 +78,7 @@ public class GameHub : StreamingHubBase<IGameHub, IGameHubReceiver>, IGameHub
         ArgumentNullException.ThrowIfNullOrEmpty(_userName);
         ArgumentNullException.ThrowIfNull(_room);
 
-        _logger.LogTrace($"{nameof(UpdateUserInfonAsync)}: {_userName} => ({request.Position.x},{request.Position.y},{request.Position.z})");
+        _logger.LogTrace($"{nameof(UpdateUserInfonAsync)}: {_userName} => {{{request.Position.x},{request.Position.y},{request.Position.z}}} (Room: {_roomName})");
 
         _model.TryUpdateUserverInfo(_roomName, _userName, request.Position);
         Broadcast(_room).OnUpdateUserInfo(new GameRoomUserInfoUpdateResponse

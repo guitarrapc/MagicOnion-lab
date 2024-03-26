@@ -1,7 +1,6 @@
 {
     "name": "MagicOnionLab.Shared",
     "references": [
-        "MessagePack",
         "MessagePack.Annotations",
         "MagicOnion.Abstractions"
     ],

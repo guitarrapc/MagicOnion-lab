@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MagicOnionLab.Net.Client": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
