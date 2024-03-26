@@ -26,4 +26,4 @@ jobs:
       - name: dotnet test
         run: dotnet test -c "${{ env.BUILD_CONFIG }}" --logger GitHubActions --logger "console;verbosity=normal"
       - name: docker build
-        run: dockr compose build
+        run: docker compose build
