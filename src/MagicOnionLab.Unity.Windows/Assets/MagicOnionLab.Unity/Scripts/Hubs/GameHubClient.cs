@@ -15,6 +15,7 @@ namespace MagicOnionLab.Unity.Hubs
         private ChannelBase _channel;
         private IGameHub _client;
         private readonly ILogger _logger;
+        private string _roomName;
         private readonly string _userName;
         private int _index;
         private Action<string> _onReceive;
@@ -30,6 +31,7 @@ namespace MagicOnionLab.Unity.Hubs
 
         public async ValueTask ConnectAsync(ChannelBase channel, string roomName, int capacity, CancellationToken ct)
         {
+            _roomName = roomName;
             _channel = channel;
             _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(channel, this, cancellationToken: ct);
             RegisterDisconnect(_client).FireAndForget();
@@ -63,7 +65,7 @@ namespace MagicOnionLab.Unity.Hubs
             finally
             {
                 // try-to-reconnect? logging event? close? etc...
-                _logger.LogInformation($"disconnected from the server.");
+                _logger.LogInformation($"disconnected from the server. (Room: {_roomName})");
 
                 if (_isSelfDisConnected)
                 {
@@ -78,10 +80,10 @@ namespace MagicOnionLab.Unity.Hubs
 
         private async Task ReconnectServerAsync()
         {
-            _logger.LogInformation($"Reconnecting to the server...");
+            _logger.LogInformation($"Reconnecting to the server... (Room: {_roomName})");
             _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(_channel, this);
             RegisterDisconnect(_client).FireAndForget();
-            _logger.LogInformation("Reconnected.");
+            _logger.LogInformation($"Reconnected. (Room: {_roomName})");
 
             _isSelfDisConnected = false;
         }
@@ -92,7 +94,7 @@ namespace MagicOnionLab.Unity.Hubs
             if (_client is null) throw new ArgumentNullException(nameof(_client));
 
             // ready
-            _logger.LogInformation($"Ready matching");
+            _logger.LogInformation($"Ready matching. (Room: {_roomName})");
             await _client.ReadyMatchAsync();
         }
 
@@ -130,7 +132,7 @@ namespace MagicOnionLab.Unity.Hubs
         {
             if (_userName.Equals(userName, StringComparison.Ordinal))
             {
-                var log = $"Join user: {userName}";
+                var log = $"Join user: {userName} (Room: {_roomName})";
                 _logger.LogInformation(log);
                 _onReceive(log);
             }
@@ -140,7 +142,7 @@ namespace MagicOnionLab.Unity.Hubs
         {
             if (_userName.Equals(userName, StringComparison.Ordinal))
             {
-                var log = $"Leave user: {userName}";
+                var log = $"Leave user: {userName} (Room: {_roomName})";
                 _logger.LogInformation(log);
                 _onReceive(log);
             }
@@ -148,7 +150,7 @@ namespace MagicOnionLab.Unity.Hubs
 
         public void OnMatchCompleted()
         {
-            var log = $"Matching complete.";
+            var log = $"Matching complete. (Room: {_roomName})";
             _logger.LogInformation(log);
             _onReceive(log);
         }
@@ -157,7 +159,7 @@ namespace MagicOnionLab.Unity.Hubs
         {
             if (_userName.Equals(response.UserName, StringComparison.Ordinal))
             {
-                var log = $"Update UserInfo: userName {response.UserName}, position: ({response.Position.x},{response.Position.y},{response.Position.z})";
+                var log = $"Update UserInfo: userName {response.UserName}, position: {{{response.Position.x},{response.Position.y},{response.Position.z}}} (Room: {_roomName})";
                 _logger.LogInformation(log);
                 _onReceive(log);
             }
