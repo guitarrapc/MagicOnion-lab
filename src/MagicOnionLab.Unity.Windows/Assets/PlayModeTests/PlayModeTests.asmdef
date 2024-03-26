@@ -4,8 +4,8 @@
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "MagicOnionLab",
-        "MagicOnionLab.Shared"
+        "MagicOnionLab.Shared",
+        "MagicOnionLab.Unity"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
