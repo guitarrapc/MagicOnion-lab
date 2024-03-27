@@ -405,3 +405,7 @@ FodyWeavers.xsd
 # Custom - allow Unity Plugin files
 !**/*.Unity.*/Assets/Plugins/**/*
 !**/*.Unity.*/[Pp]ackages/*
+
+sandbox/GameLift-CSharp-ServerSDK/**/*
+sandbox/**/*.dll
+**/*.zip
