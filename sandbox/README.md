@@ -103,8 +103,8 @@
 5. Download latest GameLiftServer SDK from [here](https://aws.amazon.com/gamelift/getting-started/).
 
   ```shell
-  curl -Lo sandbox/GameLift-CSharp-ServerSDK-5.1.2.zip https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.2.zip
-  unzip -o sandbox/GameLift-CSharp-ServerSDK-5.1.2.zip -d sandbox/GameLift-CSharp-ServerSDK
+  curl -Lo sandbox/GameLift-CSharp-ServerSDK.zip https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.2.zip
+  unzip -o sandbox/GameLift-CSharp-ServerSDK.zip -d sandbox/GameLift-CSharp-ServerSDK
   dotnet build -f net6.0 -c Debug sandbox/GameLift-CSharp-ServerSDK/src/GameLiftServerSDK.sln
   cp sandbox/GameLift-CSharp-ServerSDK/src/src/GameLiftServerSDK/bin/x64/Debug/net6.0/GameLiftServerSDK.dll sandbox/GameLiftMagicOnionServer/lib/.
   ```
