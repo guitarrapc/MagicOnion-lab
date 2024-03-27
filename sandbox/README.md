@@ -71,6 +71,8 @@
 
   ```shell
   dotnet new console -o sandbox/GameLiftMagicOnionClient
+  mkdir -p sandbox/GameLiftMagicOnionServer/lib/
+  touch sandbox/GameLiftMagicOnionServer/lib/.git-keep
   cd sandbox/GameLiftMagicOnionClient
     dotnet add package MagicOnion.Client
     dotnet add reference ../GameLiftMagicOnionShared
@@ -103,8 +105,7 @@
   ```shell
   curl -Lo sandbox/GameLift-CSharp-ServerSDK-5.1.2.zip https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.2.zip
   unzip -o sandbox/GameLift-CSharp-ServerSDK-5.1.2.zip -d sandbox/GameLift-CSharp-ServerSDK
-  dotnet build -f net6.0 -c Debug sandbox/GameLift-CSharp-ServerSDK/src/GameLiftServerSDK.sln -p ManagePackageVersionsCentrally=false
-  mkdir -p sandbox/GameLiftMagicOnionServer/lib/
+  dotnet build -f net6.0 -c Debug sandbox/GameLift-CSharp-ServerSDK/src/GameLiftServerSDK.sln
   cp sandbox/GameLift-CSharp-ServerSDK/src/src/GameLiftServerSDK/bin/x64/Debug/net6.0/GameLiftServerSDK.dll sandbox/GameLiftMagicOnionServer/lib/.
   ```
 
