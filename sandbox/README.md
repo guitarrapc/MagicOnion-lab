@@ -26,6 +26,8 @@
 
   ```shell
   dotnet new grpc -o sandbox/GameLiftMagicOnionServer
+  mkdir -p sandbox/GameLiftMagicOnionServer/lib/
+  touch sandbox/GameLiftMagicOnionServer/lib/.git-keep
   cd sandbox/GameLiftMagicOnionServer
     dotnet add package MagicOnion.Server
     dotnet add reference ../GameLiftMagicOnionShared
@@ -71,8 +73,6 @@
 
   ```shell
   dotnet new console -o sandbox/GameLiftMagicOnionClient
-  mkdir -p sandbox/GameLiftMagicOnionServer/lib/
-  touch sandbox/GameLiftMagicOnionServer/lib/.git-keep
   cd sandbox/GameLiftMagicOnionClient
     dotnet add package MagicOnion.Client
     dotnet add reference ../GameLiftMagicOnionShared
