@@ -3,9 +3,9 @@ using GameLiftMagicOnionServer.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var gl = new GameLiftServer(builder.Configuration);
+using var gl = new GameLiftServer(builder.Configuration);
 var serverParameters = gl.InitParameters();
-gl.Start(5000, serverParameters);
+gl.Start(5039, serverParameters);
 
 // Add services to the container.
 builder.Services.AddGrpc();

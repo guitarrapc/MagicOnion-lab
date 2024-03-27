@@ -3,6 +3,7 @@ using Aws.GameLift.Server.Model;
 
 namespace GameLiftMagicOnionServer;
 
+// TODO: Better using IHostedServer
 public class GameLiftServer : IDisposable
 {
     private readonly IConfiguration _configuration;
@@ -61,7 +62,7 @@ public class GameLiftServer : IDisposable
                     //server containing the updated game session object.  The game server can then examine the provided
                     //matchmakerData and handle new incoming players appropriately.
                     //updateReason is the reason this update is being supplied.
-                    Console.WriteLine("updateGameSession");
+                    Console.WriteLine("UpdateGameSession");
 
                 },
                 () =>

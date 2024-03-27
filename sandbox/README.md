@@ -263,7 +263,7 @@
 
   var gl = new GameLiftServer(builder.Configuration);
   var serverParameters = gl.InitParameters();
-  gl.Start(5000, serverParameters);
+  gl.Start(5039, serverParameters);
 
   // Add services to the container.
   builder.Services.AddGrpc();
@@ -279,3 +279,149 @@
   app.Run();
   EOF
   ```
+
+# Create GameLift Fleet
+
+1. Create Gamelift Fleet Anywhere to manage this machine as GameLift Fleet.
+
+  ```shell
+  # Create fleet
+  aws gamelift create-location --location-name custom-location-dev-local
+  aws gamelift create-fleet --name test-fleet --compute-type ANYWHERE --location "Location=custom-location-dev-local"
+  ```
+
+2. Register this machine to fleet.
+
+  ```shell
+  fleet_id=$(aws gamelift describe-fleet-attributes | jq -r '.FleetAttributes[] | select(.Name == "test-fleet") | .FleetId')
+  aws gamelift register-compute --compute-name HardwareAnywhere --fleet-id "$fleet_id" --ip-address "127.0.0.1" --location custom-location-dev-local
+  ```
+
+3. Confirm your machine is registered to fleet.
+
+  ```shell
+  aws gamelift list-compute --fleet-id $fleet_id
+  ```
+
+4. Sample output.
+
+  ```json
+  {
+      "ComputeList": [
+          {
+              "FleetId": "fleet-********************",
+              "FleetArn": "arn:aws:gamelift:ap-northeast-1:*************:fleet/fleet-*************",
+              "ComputeName": "HardwareAnywhere",
+              "ComputeArn": "arn:aws:gamelift:ap-northeast-1:*************:compute/HardwareAnywhere",
+              "IpAddress": "127.0.0.1",
+              "ComputeStatus": "Active",
+              "Location": "custom-location-dev-local",
+              "CreationTime": "2024-03-27T18:30:45.972000+09:00",
+              "GameLiftServiceSdkEndpoint": "wss://ap-northeast-1.api.amazongamelift.com"
+          }
+      ]
+  }
+  ```
+
+# Debug with Gamelift
+
+1. Create AuthToken for Fleet
+
+  ```shell
+  $auth_token=$(aws gamelift get-compute-auth-token --fleet-id $fleet_id --compute-name HardwareAnywhere | jq -r '.AuthToken')
+  echo $auth_token
+  ```
+
+2. Sample output.
+
+  ```json
+  {
+      "FleetId": "fleet-********************",
+      "FleetArn": "arn:aws:gamelift:ap-northeast-1:*************:fleet/fleet-*************",
+      "ComputeName": "HardwareAnywhere",
+      "ComputeArn": "arn:aws:gamelift:ap-northeast-1:*************:compute/HardwareAnywhere",
+      "AuthToken": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "ExpirationTimestamp": "2024-03-27T21:36:11+09:00"
+  }
+  ```
+
+3. Set your Fleet Related to Environment Variables or UserSecrets.
+
+  ```shell
+  export FLEET_ID="fleet-**************************"
+  export LOCATION="custom-location-dev-local"
+  export HOST_ID="HardwareAnywhere"
+  export AUTH_TOKEN=$auth_token
+  ```
+
+4. Run the server. Following `ProcessReady success.` message indicates that the server is ready to receive incoming game sessions. `healthcheck` message indicates that the server is healthy with GameLiftServer.
+
+  ```shell
+  $ dotnet run --project sandbox/GameLiftMagicOnionServer/GameLiftMagicOnionServer.csproj
+  ProcessReady success.
+  healthcheck
+  info: Microsoft.Hosting.Lifetime[14]
+        Now listening on: http://localhost:5039
+  info: Microsoft.Hosting.Lifetime[0]
+        Application started. Press Ctrl+C to shut down.
+  info: Microsoft.Hosting.Lifetime[0]
+        Hosting environment: Development
+  info: Microsoft.Hosting.Lifetime[0]
+        Content root path: C:\github\guitarrapc\MagicOnion-lab\sandbox\GameLiftMagicOnionServer
+  ```
+
+5. Create GameSession for this fleet.
+
+  ```shell
+  $ aws gamelift create-game-session --fleet-id $fleet_id --maximum-player-session-count 2 --location custom-location-dev-local
+  {
+      "GameSession": {
+          "GameSessionId": "arn:aws:gamelift:ap-northeast-1::gamesession/fleet-**************************/custom-location-dev-local/gsess-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "FleetId": "fleet-**************************",
+          "FleetArn": "arn:aws:gamelift:ap-northeast-1::*************::fleet/fleet-**************************",
+          "CreationTime": "2024-03-27T18:50:58.244000+09:00",
+          "CurrentPlayerSessionCount": 0,
+          "MaximumPlayerSessionCount": 2,
+          "Status": "ACTIVATING",
+          "GameProperties": [],
+          "IpAddress": "127.0.0.1",
+          "Port": 5039,
+          "PlayerSessionCreationPolicy": "ACCEPT_ALL",
+          "Location": "custom-location-dev-local"
+      }
+  }
+
+  # Review GameSession with following command
+  $ gamesession_id=$(aws gamelift describe-game-sessions --fleet-id $fleet_id | jq -r '.GameSessions[0].GameSessionId')
+  ```
+
+> [!TIPS]
+> When activating GameSession, MagicOnionServer shows `ActivateGameSession` message as you implemented Console.WriteLine.
+
+  ```shell
+  healthcheck
+  ... (repeated)
+  ActivateGameSession
+  healthcheck
+  ```
+
+7. Create PlayerSession to connect to Fleet, PlayerSession can create from GameSession.
+
+  ```shell
+  $ aws gamelift create-player-session --game-session-id "$gamesession_id" --player-id "player-1"
+  {
+      "PlayerSession": {
+          "PlayerSessionId": "psess-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "PlayerId": "player-1",
+          "GameSessionId": "arn:aws:gamelift:ap-northeast-1::gamesession/fleet-**************************/custom-location-dev-local/gsess-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "FleetId": "fleet-**************************",
+          "FleetArn": "arn:aws:gamelift:ap-northeast-1::*************::fleet/fleet-**************************",
+          "CreationTime": "2024-03-27T19:06:35.475000+09:00",
+          "Status": "RESERVED",
+          "IpAddress": "127.0.0.1",
+          "Port": 5039
+      }
+  }
+  ```
+
+8. Use `GameSessionId`, `IpAddress` and `Port` to connect Server. Use `PlayerSesionId` to identify player.
