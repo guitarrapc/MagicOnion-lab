@@ -401,11 +401,12 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Custom - allow Unity .meta files
-!**/*.Unity.*/**/*.meta
+!**/*.Unity*/**/*.meta
 # Custom - allow Unity Plugin files
-!**/*.Unity.*/Assets/Plugins/**/*
-!**/*.Unity.*/[Pp]ackages/*
+!**/*.Unity*/Assets/Plugins/**/*
+!**/*.Unity*/[Pp]ackages/*
 
+# Custom - remove sandbox GameLift files
 sandbox/GameLift-CSharp-ServerSDK/**/*
 sandbox/**/*.dll
 **/*.zip
