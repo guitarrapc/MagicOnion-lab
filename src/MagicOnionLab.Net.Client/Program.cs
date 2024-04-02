@@ -1,5 +1,6 @@
 using Grpc.Net.Client;
 using MagicOnion.Client;
+using MagicOnionLab.Shared.Helpers;
 using MagicOnionLab.Shared.Hubs;
 using MagicOnionLab.Shared.Mpos;
 using MagicOnionLab.Shared.Services;
@@ -52,7 +53,7 @@ public class MagicOnionClientApp : ConsoleAppBase
     public async ValueTask GameClientHub(string host, string roomName, int userCount = 1, int capacity = 1)
     {
         var tasks = Enumerable.Range(1, userCount)
-            .Select((x, i) => (userName: $"{roomName}-foo{x}", index: i))
+            .Select((x, i) => (userName: UserNameGenerator.GetRandomtName(), index: i))
             .Select(async x =>
             {
                 await Task.Delay(200 * Random.Shared.Next(1, userCount) * x.index);
@@ -157,7 +158,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         finally
         {
             // try-to-reconnect? logging event? close? etc...
-            _logger.LogInformation($"Disconnected from the server. (Room: {_roomName})");
+            _logger.LogInformation($"{_userName}@{_roomName}: Disconnected from the server.");
 
             if (_isSelfDisConnected)
             {
@@ -174,10 +175,10 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(_channel);
 
-        _logger.LogInformation($"Reconnecting to the server... (Room {_roomName})");
+        _logger.LogInformation($"{_userName}@{_roomName}: Reconnecting to the server.");
         _client = await StreamingHubClient.ConnectAsync<IGameHub, IGameHubReceiver>(_channel, this);
         RegisterDisconnect(_client).FireAndForget(_logger);
-        _logger.LogInformation($"Reconnected. (Room {_roomName})");
+        _logger.LogInformation($"{_userName}@{_roomName}: Reconnected.");
 
         _isSelfDisConnected = false;
     }
@@ -188,7 +189,7 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(_client);
 
         // ready
-        _logger.LogInformation($"Ready matching: {_userName} (Room {_roomName})");
+        _logger.LogInformation($"{_userName}@{_roomName}: Matching and send ready.");
         await _client.ReadyMatchAsync();
     }
 
@@ -217,14 +218,14 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
 
     public void OnCreateRoom(string roomName)
     {
-        _logger.LogInformation($"Create room: {roomName}");
+        _logger.LogInformation($"{_userName}@{_roomName}: Room created. (Event)");
     }
 
     public void OnJoinRoom(string userName)
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Join user: {userName} (Room {_roomName})");
+            _logger.LogInformation($"{_userName}@{_roomName}: User Join room. (Event)");
         }
     }
 
@@ -232,20 +233,20 @@ public class GameHubClient : IGameHubReceiver, IAsyncDisposable
     {
         if (_userName.Equals(userName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Leave user: {userName} (Room {_roomName})");
+            _logger.LogInformation($"{_userName}@{_roomName}: User leave. (Event)");
         }
     }
 
     public void OnMatchCompleted()
     {
-        _logger.LogInformation($"Matching complete. (Room {_roomName})");
+        _logger.LogInformation($"{_userName}@{_roomName}: Matching complete. (Event)");
     }
 
     public void OnUpdateUserInfo(GameRoomUserInfoUpdateResponse response)
     {
         if (_userName.Equals(response.UserName, StringComparison.Ordinal))
         {
-            _logger.LogInformation($"Update UserInfo: userName {response.UserName}, position: {{{response.Position.x},{response.Position.y},{response.Position.z}}} (Room {_roomName})");
+            _logger.LogInformation($"{_userName}@{_roomName}: Update UserInfo. position {{{response.Position.x},{response.Position.y},{response.Position.z}}} (Event)");
         }
     }
 

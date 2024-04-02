@@ -17,7 +17,7 @@ namespace MagicOnionLab.Unity.Views
         [SerializeField]
         private TMP_InputField? _userCount = default;
 
-        public int Capacity => int.Parse(_userCount?.text ?? throw new ArgumentNullException(nameof(_capacity)));
+        public int Capacity => int.Parse(_capacity?.text ?? throw new ArgumentNullException(nameof(_capacity)));
         [SerializeField]
         private TMP_InputField? _capacity = default;
 
@@ -99,18 +99,19 @@ namespace MagicOnionLab.Unity.Views
         {
             if (_randomValues)
             {
-                // _roomName!.text = RandomAlphabet(4, 6)
-                _roomName!.text = RandomUUID(10);
+                // _roomName!.text = RandomAlphabet(4, 8)
+                _roomName!.text = RandomUUID(4,8);
                 _userCount!.text = UnityEngine.Random.Range(4, 8).ToString();
                 _capacity!.text = _userCount.text;
 
             }
 
             // GUID RoomName
-            static string RandomUUID(int max)
+            static string RandomUUID(int min, int max)
             {
+                var roomLength = UnityEngine.Random.Range(min, max);
                 var roomName = Guid.NewGuid().ToString();
-                return roomName.AsSpan().Slice(0, max).ToString();
+                return roomName.AsSpan().Slice(0, roomLength).ToString();
             }
             // Alphabet RoomName
             static string RandomAlphabet(int min, int max)

@@ -1,4 +1,5 @@
 #nullable enable
+using MagicOnionLab.Shared.Helpers;
 using MagicOnionLab.Unity.Hubs;
 using MagicOnionLab.Unity.Infrastructures;
 using MagicOnionLab.Unity.Infrastructures.Defines;
@@ -115,7 +116,7 @@ namespace MagicOnionLab.Unity
             {
                 _gameHubComponentView?.AppendResult($"# Begin with following parameters. roomName {roomName}, userCount {userCount}, capacity {capacity}.");
                 var tasks = Enumerable.Range(1, userCount)
-                    .Select((x, i) => (userName: $"foo{x}", index: i))
+                    .Select((x, i) => (userName: UserNameGenerator.GetRandomtName(), index: i))
                     .Select(async x =>
                     {
                         await Task.Delay(200 * Random.Range(1, userCount) * x.index);
