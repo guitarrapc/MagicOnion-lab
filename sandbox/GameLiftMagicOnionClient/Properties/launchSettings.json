@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GameLiftMagicOnionClient": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

@@ -8,20 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MagicOnion.Abstractions" Version="6.1.2" />
+    <PackageReference Include="MagicOnion.Abstractions" Version="6.1.3" />
     <PackageReference Include="MessagePack" Version="2.5.140" />
     <PackageReference Include="MessagePack.UnityShims" Version="2.5.140" />
   </ItemGroup>
-
-  <Target Name="RestoreLocalTools" BeforeTargets="GenerateMessagePack;GenerateMagicOnion">
-    <Exec Command="dotnet tool restore" />
-  </Target>
-
-  <Target Name="GenerateMessagePack" AfterTargets="Build">
-    <PropertyGroup>
-      <_MessagePackGeneratorArguments>-i ./MagicOnionLab.Shared.csproj -o ../MagicOnionLab.Unity/Assets/Scripts/MessagePack.Generated/MessagePack.Generated.cs</_MessagePackGeneratorArguments>
-    </PropertyGroup>
-    <Exec Command="dotnet tool run mpc $(_MessagePackGeneratorArguments)" />
-  </Target>
 
 </Project>
