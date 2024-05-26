@@ -9,9 +9,8 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Directory.Packages.props", "."]
-COPY ["Directory.Build.props", "."]
 COPY ["src/MagicOnionLab.Shared/Directory.Build.props", "src/MagicOnionLab.Shared/"]
+COPY ["src/MagicOnionLab.Shared/Directory.Build.targets", "src/MagicOnionLab.Shared/"]
 COPY ["src/MagicOnionLab.Server/MagicOnionLab.Server.csproj", "src/MagicOnionLab.Server/"]
 COPY ["src/MagicOnionLab.Shared/MagicOnionLab.Shared.csproj", "src/MagicOnionLab.Shared/"]
 RUN dotnet restore "./src/MagicOnionLab.Server/MagicOnionLab.Server.csproj"
